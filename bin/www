@@ -46,7 +46,7 @@ io.on('connection', socket => {
       username: socket.username,
       id: socket.userid,
       msg: msg,
-      time: (new Date).toLocaleString()
+      time: new Date - 0
     });
   });
 
