@@ -33,8 +33,7 @@ block content
         
     script(type='text/javascript', src='/socket.io/socket.io.js')
     script.
-        window.resizeTo(600, 800);
-        var socket = null;
+        var socket = io();
 
         var $ = function(str){return document.querySelector(str)}
 
@@ -54,10 +53,6 @@ block content
         var shade = $('#shade');
         var userlist = $('.userlist');
         var nums = $('.users .nums');
-        var inputingEl = cc('span', {
-            className: 'inputing',
-            textContent: '（正在输入……）'
-        });
 
         inputname.focus();
 
@@ -68,7 +63,7 @@ block content
 
             var time = cc('span', {
                 className: 'time',
-                textContent: '(' + data.time + ')'
+                textContent: '(' + new Date(data.time).toLocaleString() + ')'
             });
 
             var username = cc('p', {
@@ -97,7 +92,29 @@ block content
             li.scrollIntoView();
         }
 
-        var userJoin = function(username, id, isMyself, users){
+        var initusers = function(id, users){
+            userlist.innerHTML = '';
+            var id = socket.id;
+
+            users.forEach(function(user){
+                var li = cc('li', {
+                    id: 'id' + user.id,
+                    textContent: user.username + (user.id === id ? '(我)' : '')
+                });
+                userlist.appendChild(li);
+            });
+        }
+
+        var userJoin = function(username, id, users){
+            var isMyself = socket.id === id;
+            
+            if(isMyself){
+                shade.style.display = 'none';
+                input.focus();
+            }else if(!socket.isLogin){
+                return;
+            }
+
             var li = cc('li', {
                 className: 'chatitem msgitem userjoin',
                 innerHTML: '<p class="msgcontent">' + username+(isMyself?'(我)':'') + ' 加入群聊</p>'
@@ -105,24 +122,7 @@ block content
 
             message.appendChild(li);
 
-            if(isMyself){
-                input.focus();
-                shade.style.display = 'none';
-
-                users.forEach(function(user){
-                    var li2 = cc('li', {
-                        id: 'id' + user.id,
-                        textContent: user.username + (user.id === id ? '(我)' : '')
-                    });
-                    userlist.appendChild(li2);
-                });
-            }else{
-                var li2 = cc('li', {
-                    id: 'id' + id,
-                    textContent: username
-                });
-                userlist.appendChild(li2);
-            }
+            initusers(id, users);
 
             nums.textContent = users.length;
 
@@ -147,22 +147,26 @@ block content
 
         var inputing = function(id){
             inputing.wait = 1000;
-            clearTimeout(inputing.st);
+            clearTimeout(inputing[id]);
             var li = $('#id' + id);
 
             if(!li.querySelector('.inputing')){
-                li.appendChild(inputingEl);
+                li.appendChild(cc('span', {
+                    className: 'inputing',
+                    textContent: '（正在输入……）'
+                }));
             }
 
-            inputing.st = setTimeout(function(){
+            inputing[id] = setTimeout(function(){
+                var inp = li.querySelector('.inputing');
                 clearTimeout(inputing.st);
-                inputingEl.parentNode.removeChild(inputingEl);
+                inp.parentNode.removeChild(inp);
             }, inputing.wait);
         }
 
         var nameconflict = function(username){
             inputname.classList.add('conflict');
-            inputname.setAttribute('placeholder', '昵称' + username + '已被占用');
+            inputname.setAttribute('placeholder', '昵称"' + username + '"已被占用');
             inputname.value = '';
             shade.style.display = '';
             inputname.focus();
@@ -175,8 +179,6 @@ block content
         inputname.onkeydown = function(e){
             e.keyCode == 13 && comfirm.click();
         }
-
-        var socket = io();
         
         socket.on('connect', function(){
             comfirm.onclick = function(){
@@ -187,34 +189,40 @@ block content
                     inputname.focus();
                 }
             } 
-            
-            socket.on('conflict'+socket.id, nameconflict)
+    
+            socket.on('conflict' + socket.id, nameconflict)
 
             socket.on('userjoin', function(username, id, users){
-                var isMyself = id === socket.id;
-                userJoin(username, id, isMyself, users);
-            });
-            
-            socket.on('chat', function(data){
-                sendMsg(data, data.id === socket.id);
-            });
+                console.log(socket.isLogin);
+                userJoin(username, id, users);
 
-            socket.on('userout', userOut);
+                if(socket.id === id){
+                    socket.isLogin = true;
 
-            send.onclick = function(){
-                var msg = input.value.trim();
-                if(msg){
-                    socket.emit('chat', msg);
-                    input.value = '';
-                    input.focus();
+                    socket.on('userout', userOut);
+
+                    socket.on('inputing', inputing);
+
+                    send.onclick = function(){
+                        var msg = input.value.trim();
+                        if(msg){
+                            socket.emit('chat', msg);
+                            input.value = '';
+                            input.focus();
+                        }
+                    }
+
+                    input.oninput = function(){
+                        socket.emit('inputing');
+                    }
+
+                    socket.on('chat', function(data){
+                        sendMsg(data, data.id === socket.id);
+                    });
                 }
-            }
+            }); 
 
-            input.oninput = function(){
-                socket.emit('inputing');
-            }
 
-            socket.on('inputing', inputing);
         })
 
         
