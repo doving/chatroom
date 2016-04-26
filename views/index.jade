@@ -1,0 +1,222 @@
+extends layout
+
+block content
+    #shade
+        .shadedialog
+            input.inputname(type='text', placeholder='请输入昵称', maxlength='10')
+            input.confirm(type='button', value='确定')
+    #container
+        .left
+            .message
+                ul.chatbox
+                    //- li.chatitem.others
+                    //-     p.username 用户
+                    //-     p.msg 你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔
+                    //- li.chatitem.myself
+                    //-     p.username 我自sadg 己
+                    //-     p.msg 你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔
+                    //- li.chatitem.welcome
+                    //-     p.msgcontent aaa加入群聊
+            .footer
+                input.input(type='text')
+                button.send 发送
+        .right
+            .users
+                p.user-title 成员(
+                    span.nums 0
+                    |)
+                ul.userlist
+                    //- li 阿萨德
+                    //- li 阿萨德
+                    //- li 阿萨德
+                    //- li 阿萨德阿萨德阿萨asdf 德阿萨德
+        
+    script(type='text/javascript', src='/socket.io/socket.io.js')
+    script.
+        window.resizeTo(600, 800);
+        var socket = null;
+
+        var $ = function(str){return document.querySelector(str)}
+
+        var cc = function(tagName, options){
+            var e = document.createElement(tagName);
+            for(var p in options){
+                e[p] = options[p];
+            }
+            return e;
+        }
+
+        var input = $('.input');
+        var send = $('.send');
+        var message = $('.message ul');
+        var inputname = $('.inputname');
+        var comfirm = $('.confirm');
+        var shade = $('#shade');
+        var userlist = $('.userlist');
+        var nums = $('.users .nums');
+        var inputingEl = cc('span', {
+            className: 'inputing',
+            textContent: '（正在输入……）'
+        });
+
+        inputname.focus();
+
+        var sendMsg = function(data, isMyself){
+            var li = cc('li', {
+                className: 'chatitem ' + (isMyself ? 'myself' : 'others' + '')
+            });
+
+            var time = cc('span', {
+                className: 'time',
+                textContent: '(' + data.time + ')'
+            });
+
+            var username = cc('p', {
+                className: 'username'
+            });
+
+            var text = document.createTextNode(data.username + (isMyself ? '-我' : ''));
+
+            if(isMyself){
+                username.appendChild(time);
+                username.appendChild(text);
+            }else{
+                username.appendChild(text);
+                username.appendChild(time);
+            }
+
+            var msg = cc('p', {
+                className: 'msg',
+                textContent: data.msg
+            });
+
+            li.appendChild(username);
+            li.appendChild(msg);
+
+            message.appendChild(li);
+            li.scrollIntoView();
+        }
+
+        var userJoin = function(username, id, isMyself, users){
+            var li = cc('li', {
+                className: 'chatitem msgitem userjoin',
+                innerHTML: '<p class="msgcontent">' + username+(isMyself?'(我)':'') + ' 加入群聊</p>'
+            });
+
+            message.appendChild(li);
+
+            if(isMyself){
+                input.focus();
+                shade.style.display = 'none';
+
+                users.forEach(function(user){
+                    var li2 = cc('li', {
+                        id: 'id' + user.id,
+                        textContent: user.username + (user.id === id ? '(我)' : '')
+                    });
+                    userlist.appendChild(li2);
+                });
+            }else{
+                var li2 = cc('li', {
+                    id: 'id' + id,
+                    textContent: username
+                });
+                userlist.appendChild(li2);
+            }
+
+            nums.textContent = users.length;
+
+            li.scrollIntoView();
+        }
+
+        var userOut = function(id, username, length){
+            console.log(username);
+            var li = $('#id' + id);
+            li.parentNode.removeChild(li);
+            nums.textContent = length;
+
+            var li2 = cc('li', {
+                className: 'chatitem msgitem userout',
+                innerHTML: '<p class="msgcontent">' + username + ' 退出群聊</p>'
+            });
+
+            message.appendChild(li2);
+
+            li2.scrollIntoView();
+        }
+
+        var inputing = function(id){
+            inputing.wait = 1000;
+            clearTimeout(inputing.st);
+            var li = $('#id' + id);
+
+            if(!li.querySelector('.inputing')){
+                li.appendChild(inputingEl);
+            }
+
+            inputing.st = setTimeout(function(){
+                clearTimeout(inputing.st);
+                inputingEl.parentNode.removeChild(inputingEl);
+            }, inputing.wait);
+        }
+
+        var nameconflict = function(username){
+            inputname.classList.add('conflict');
+            inputname.setAttribute('placeholder', '昵称' + username + '已被占用');
+            inputname.value = '';
+            shade.style.display = '';
+            inputname.focus();
+        }
+
+        input.onkeydown = function(e){
+            e.keyCode == 13 && send.click();
+        }
+
+        inputname.onkeydown = function(e){
+            e.keyCode == 13 && comfirm.click();
+        }
+
+        var socket = io();
+        
+        socket.on('connect', function(){
+            comfirm.onclick = function(){
+                var username = inputname.value.replace(/\s/g, '');
+                if(username){
+                    socket.emit('join', username, socket.id);
+                }else{
+                    inputname.focus();
+                }
+            } 
+            
+            socket.on('conflict'+socket.id, nameconflict)
+
+            socket.on('userjoin', function(username, id, users){
+                var isMyself = id === socket.id;
+                userJoin(username, id, isMyself, users);
+            });
+            
+            socket.on('chat', function(data){
+                sendMsg(data, data.id === socket.id);
+            });
+
+            socket.on('userout', userOut);
+
+            send.onclick = function(){
+                var msg = input.value.trim();
+                if(msg){
+                    socket.emit('chat', msg);
+                    input.value = '';
+                    input.focus();
+                }
+            }
+
+            input.oninput = function(){
+                socket.emit('inputing');
+            }
+
+            socket.on('inputing', inputing);
+        })
+
+        
+
+        
