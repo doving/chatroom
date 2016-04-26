@@ -56,6 +56,22 @@ block content
 
         inputname.focus();
 
+        var formattime = function(nums){
+            var d = new Date(nums);
+            var m = d.getMonth() + 1;
+            var day = d.getDate();
+            var h = d.getHours();
+            var mi = d.getMinutes();
+            var s = d.getSeconds();
+            m = m > 9 ? m : '0' + m;
+            day = day > 9 ? day : '0' + day;
+            h = h > 9 ? h : '0' + h;
+            mi = mi > 9 ? mi : '0' + mi;
+            s = s > 9 ? s : '0' + s;
+
+            return m + '-' + day + ' ' + h + ':' + mi + ':' + s;
+        }
+
         var sendMsg = function(data, isMyself){
             var li = cc('li', {
                 className: 'chatitem ' + (isMyself ? 'myself' : 'others' + '')
@@ -63,7 +79,7 @@ block content
 
             var time = cc('span', {
                 className: 'time',
-                textContent: '(' + new Date(data.time).toLocaleString() + ')'
+                textContent: '(' + formattime(data.time) + ')'
             });
 
             var username = cc('p', {
@@ -179,6 +195,8 @@ block content
         inputname.onkeydown = function(e){
             e.keyCode == 13 && comfirm.click();
         }
+
+        document.body.ontouchmove = function(){return false;}
         
         socket.on('connect', function(){
             comfirm.onclick = function(){
