@@ -72,17 +72,36 @@ li{
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 40px;
+    height: 30%;
     padding: 2px;
+}
+.footer .input,
+.footer .tools,
+.footer .send{
+    position: absolute;
+}
+.footer .tools{
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20%;
     background: #ccc;
 }
 .footer .input{
-    width: 85%;
+    top: 20%;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    padding: 5px;
+    outline: none;
+    border: none;
+    resize: none;
 }
 .footer .send{
-    width: -webkit-calc(15% - 2px);
-    width: calc(15% - 2px);
-    margin-left: 2px; 
+    top: 80%;
+    right: 0;
+    width: 30%;
+    height: 20%;
 }
 .users{
     position: absolute;
@@ -98,8 +117,9 @@ li{
 }
 .message{
     position: absolute;
+    left: 0
     top: 0;
-    bottom: 40px;
+    height: 70%;
     width: 100%;
 }
 .users .user-title{
