@@ -84,24 +84,25 @@ li{
     top: 0;
     left: 0;
     width: 100%;
-    height: 20%;
-    background: #ccc;
+    height: 40px;
+    border-top: 1px solid #ccc;
 }
 .footer .input{
-    top: 20%;
+    top: 40px;
     left: 0;
+    bottom: 30px;
     width: 100%;
-    height: 60%;
     padding: 5px;
     outline: none;
     border: none;
     resize: none;
+    overflow: auto;
 }
 .footer .send{
-    top: 80%;
+    bottom: 0;
     right: 0;
-    width: 30%;
-    height: 20%;
+    width: 80px;
+    height: 30px;
 }
 .users{
     position: absolute;
@@ -168,6 +169,7 @@ li{
     border-radius: 5px;
     padding: 5px 10px;
     display: inline-block;
+    word-break: break-all;
     z-index: 1;
 }
 .message .chatitem .msg:after{
@@ -201,12 +203,18 @@ li{
     border-radius: 3px;
     padding: 0 10px;
     font-size: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
 }
 .message .chatitem.msgitem.userjoin .msgcontent{
     background: #55C227;
 }
 .message .chatitem.msgitem.userout .msgcontent{
     background: #ccc;
+}
+.message .chatitem.msgitem.warning .msgcontent{
+    background: #FF7B7B;
 }
 .users ul{
     padding: 10px 5px;
