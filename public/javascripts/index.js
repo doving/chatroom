@@ -1,19 +1,20 @@
 import util from './util';
 
-var socket = io();
+const socket = io();
 
-var input = util.$('.input');
-var send = util.$('.send');
-var message = util.$('.message ul');
-var inputname = util.$('.inputname');
-var comfirm = util.$('.confirm');
-var shade = util.$('#shade');
-var userlist = util.$('.userlist');
-var nums = util.$('.users .nums');
+const input = util.$('.input');
+const send = util.$('.send');
+const message = util.$('.message ul');
+const inputname = util.$('.inputname');
+const comfirm = util.$('.confirm');
+const shade = util.$('#shade');
+const userlist = util.$('.userlist');
+const nums = util.$('.users .nums');
+const upload = util.$('.upload');
 
 inputname.focus();
 
-var sendMsg = function(data, isMyself){
+const sendMsg = function(data, isMyself){
     var li = util.$c('li', {
         className: `chatitem ${isMyself ? 'myself' : 'others'}`
     });
@@ -39,7 +40,7 @@ var sendMsg = function(data, isMyself){
 
     var msg = util.$c('p', {
         className: 'msg',
-        textContent: data.msg
+        innerHTML: data.msg
     });
 
     li.appendChild(username);
@@ -49,7 +50,7 @@ var sendMsg = function(data, isMyself){
     li.scrollIntoView();
 }
 
-var initusers = function(id, users){
+const initusers = function(id, users){
     userlist.innerHTML = '';
     var id = socket.id;
 
@@ -62,7 +63,7 @@ var initusers = function(id, users){
     });
 }
 
-var userJoin = function(username, id, users){
+const userJoin = function(username, id, users){
     var isMyself = socket.id === id;
     
     if(isMyself){
@@ -72,37 +73,33 @@ var userJoin = function(username, id, users){
         return;
     }
 
-    var li = util.$c('li', {
-        className: 'chatitem msgitem userjoin',
-        innerHTML: '<p class="msgcontent">' + username+(isMyself?'(我)':'') + ' 加入群聊</p>'
-    });
-
-    message.appendChild(li);
-
     initusers(id, users);
 
     nums.textContent = users.length;
 
-    li.scrollIntoView();
+    showTip(`${username} 加入群聊`, 'userjoin');
 }
 
-var userOut = function(id, username, length){
-    console.log(username);
+const userOut = function(id, username, length){
     var li = util.$('#id' + id);
     li.parentNode.removeChild(li);
     nums.textContent = length;
 
-    var li2 = util.$c('li', {
-        className: 'chatitem msgitem userout',
-        innerHTML: `<p class="msgcontent">${username}退出群聊</p>`
-    });
-
-    message.appendChild(li2);
-
-    li2.scrollIntoView();
+    showTip(`${username}退出群聊`, 'userout');
 }
 
-var inputing = function(id){
+const showTip = function(msg, type){
+    var li = util.$c('li', {
+        className: `chatitem msgitem ${type}`,
+        innerHTML: `<p class="msgcontent">${msg}</p>`
+    });
+
+    message.appendChild(li);
+
+    li.scrollIntoView();
+}
+
+const inputing = function(id){
     inputing.wait = 1000;
     clearTimeout(inputing[id]);
     var li = util.$('#id' + id);
@@ -121,12 +118,35 @@ var inputing = function(id){
     }, inputing.wait);
 }
 
-var nameconflict = function(username){
+const nameconflict = function(username){
     inputname.classList.add('conflict');
     inputname.setAttribute('placeholder', `昵称${username}已被占用`);
     inputname.value = '';
     shade.style.display = '';
     inputname.focus();
+}
+
+const loadImg = function(e){
+    let fr = new FileReader();
+    let img = e.target.files[0];
+
+    if(!img)return;
+
+    if(!/^image\/[a-z]+$/.test(img.type)){
+        showTip('请选择图片', 'warning');
+        return;
+    }
+    if(img.size > 1024 * 50){
+        showTip('图片不得超过50k', 'warning');
+        return;
+    }
+
+    fr.readAsDataURL(img);
+
+    fr.onload = e => {
+        input.innerHTML += `<img src=${e.target.result} />`;
+        e.target.value = '';
+    }
 }
 
 input.onkeydown = function(e){
@@ -155,7 +175,7 @@ socket.on('connect', function(){
     socket.on('conflict' + socket.id, nameconflict)
 
     socket.on('userjoin', function(username, id, users){
-        
+
         userJoin(username, id, users);
 
         if(socket.id === id){
@@ -166,21 +186,33 @@ socket.on('connect', function(){
             socket.on('inputing', inputing);
 
             send.onclick = function(){
-                var msg = input.value.trim();
+                var msg = input.innerHTML.trim();
                 if(msg){
                     socket.emit('chat', msg);
-                    input.value = '';
-                    input.focus();
+                    input.innerHTML = '';
                 }
             }
 
             input.oninput = function(){
                 socket.emit('inputing');
+                this.innerHTML = this.innerHTML.replace(/<[^img\s*][^>]*>/g, '') + '';
+            }
+
+            document.ondrop = function(e){
+                let img = e.dataTransfer;
+
+                e.target == input && loadImg({target: img});
+
+                if(img.files.length > 0){
+                    return false;
+                }     
             }
 
             socket.on('chat', function(data){
                 sendMsg(data, data.id === socket.id);
             });
+
+            upload.onchange = loadImg;
         }
     }); 
 
