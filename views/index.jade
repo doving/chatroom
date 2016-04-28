@@ -19,8 +19,8 @@ block content
                     //-     p.msgcontent aaa加入群聊
             .footer
                 .tools
-                    input(type='file')
-                textarea.input
+                    input.upload(type='file', accept="image/*;capture=camera")
+                section.input(contentEditable='true')
                 button.send 发送
         .right
             .users
