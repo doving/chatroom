@@ -6,20 +6,33 @@ block content
             input.inputname(type='text', placeholder='请输入昵称', maxlength='10')
             input.confirm(type='button', value='确定')
     #container
+        .heart-dialog 收藏图片
+            i.icon-heart
         .left
             .message
                 ul.chatbox
                     //- li.chatitem.others
                     //-     p.username 用户
-                    //-     p.msg 你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔
+                    //-     p.msg
+                    //-         |你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔
+                    //-         .heart-dialog 收藏表情
+                            
                     //- li.chatitem.myself
                     //-     p.username 我自sadg 己
                     //-     p.msg 你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔
+                            
                     //- li.chatitem.welcome
                     //-     p.msgcontent aaa加入群聊
             .footer
                 .tools
-                    input.upload(type='file', accept="image/*;capture=camera")
+                    form.upload-form
+                        input.upload(type='file', accept="image/*;capture=camera")
+                    .tool.send-img(title='发送图片')
+                        i.icon-picture
+                    .tool.heart(title='我的收藏')
+                        i.icon-heart
+                    .heart-pics
+                        .pics-box
                 section.input(contentEditable='true')
                 button.send 发送
         .right

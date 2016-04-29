@@ -1,4 +1,6 @@
 import util from './util';
+import '../stylesheets/fonticon';
+import '../stylesheets/style';
 
 const socket = io();
 
@@ -11,8 +13,31 @@ const shade = util.$('#shade');
 const userlist = util.$('.userlist');
 const nums = util.$('.users .nums');
 const upload = util.$('.upload');
+const uploadForm = util.$('.upload-form');
+const sendpic = util.$('.send-img');
+const heart = util.$('.heart');
+const heartDialog = util.$('.heart-dialog');
+const pics = JSON.parse(localStorage.getItem('pics')||0) || [];
+const picBox = util.$('.pics-box');
+const heartPic = util.$('.heart-pics');
 
 inputname.focus();
+
+const heartImg = function(pics){
+    [/*...pics, ...pics, ...pics,*/ ...pics].forEach(pic => {
+        let div = util.$c('div', {
+            className: 'heart-item'
+        });
+
+        let img = util.$c('img', {
+            className: 'heart-img',
+            src: pic
+        });
+
+        div.appendChild(img);
+        picBox.appendChild(div);
+    });
+}
 
 const sendMsg = function(data, isMyself){
     var li = util.$c('li', {
@@ -144,23 +169,16 @@ const loadImg = function(e){
     fr.readAsDataURL(img);
 
     fr.onload = e => {
-        input.innerHTML += `<img src=${e.target.result} />`;
+        input.innerHTML += `<img class="pic" src=${e.target.result} />`;
         e.target.value = '';
     }
+
+    uploadForm.reset();
 }
 
-input.onkeydown = function(e){
-    if(e.keyCode == 13){ 
-        send.click();
-        return false;
-    }
-}
+const showHeartDialog = function(){
 
-inputname.onkeydown = function(e){
-    e.keyCode == 13 && comfirm.click();
 }
-
-document.body.ontouchmove = function(){return false;}
 
 socket.on('connect', function(){
     comfirm.onclick = function(){
@@ -181,6 +199,8 @@ socket.on('connect', function(){
         if(socket.id === id){
             socket.isLogin = true;
 
+            heartImg(pics);
+
             socket.on('userout', userOut);
 
             socket.on('inputing', inputing);
@@ -195,17 +215,33 @@ socket.on('connect', function(){
 
             input.oninput = function(){
                 socket.emit('inputing');
-                this.innerHTML = this.innerHTML.replace(/<[^img\s*][^>]*>/g, '') + '';
+               //this.innerHTML = this.innerHTML.replace(/<[^(img)(div)][^>]*>/g, '') + '';
+            }
+
+            input.onkeydown = function(e){
+                if(e.keyCode == 13 && !e.ctrlKey){
+                    send.click();
+                    return false;
+                }
+            }
+
+            inputname.onkeydown = function(e){
+                e.keyCode == 13 && comfirm.click();
             }
 
             document.ondrop = function(e){
+                console.log(e);
                 let img = e.dataTransfer;
 
                 e.target == input && loadImg({target: img});
 
-                if(img.files.length > 0){
+                //if(img.files.length > 0 || e.target != input){
                     return false;
-                }     
+                //}     
+            }
+
+            sendpic.onclick = function(){
+                upload.click();
             }
 
             socket.on('chat', function(data){
@@ -213,6 +249,64 @@ socket.on('connect', function(){
             });
 
             upload.onchange = loadImg;
+
+            document.oncontextmenu = function(e){
+                if(e.target.className === 'pic'){
+                    Object.assign(heartDialog.style, {
+                        top: `${e.pageY}px`,
+                        left: `${e.pageX}px`,
+                        display: 'block'
+                    });
+
+                    heartDialog.pic = e.target.src;
+                    return false;
+                }
+            }
+
+            heartDialog.onclick = function(){
+                if(pics.find(p => p == this.pic)){
+                    showTip('该图已收藏', 'warning');
+                }else{
+                    pics.push(this.pic);
+
+                    heartImg([this.pic]);
+                    
+                    localStorage.setItem('pics', JSON.stringify(pics));
+                }
+                this.style.display = 'none';
+            }
+
+            heart.onclick = function(){
+                if(this.open){
+                    heartPic.style.display = 'none';
+                }else{
+                    heartPic.style.display = 'block';
+                }
+                this.open = !this.open; 
+            }
+
+            picBox.onclick = function(e){
+                let target = e.target;
+                if(/^heart-img$|^heart-item$/.test(target.className)){
+    
+                    let src = target.className === 'heart-item' ? 
+                        target.childNodes[0].src : target.src;
+
+                    input.innerHTML += `<img class="pic" src=${src} />`;
+
+                    heart.open = false;
+                    heartPic.style.display = 'none';
+                } 
+            }
+
+            document.onclick = function(e){
+                let child = [...util.$('.tools').querySelectorAll('*')].find(el => el == e.target);
+                let c = [util.$('.send-img'), ...util.$('.send-img').querySelectorAll('*')];
+                if(c.find(el => el == child) || !child){
+                    heart.open = false;
+                    heartPic.style.display = 'none';
+                }
+            };
         }
     }); 
 
