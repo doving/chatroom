@@ -16,10 +16,14 @@ module.exports = {
                     presets: ['es2015']
                 }
             },
+            {
+                test: /\.css$/,
+                loader: 'style!css'
+            }
         ]
     },
     resolve: {
-        extensions: ['', '.js']
+        extensions: ['', '.js', '.css']
     },
     plugins: [
         new webpack.optimize.UglifyJsPlugin({
