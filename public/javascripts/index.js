@@ -230,7 +230,6 @@ socket.on('connect', function(){
             }
 
             document.ondrop = function(e){
-                console.log(e);
                 let img = e.dataTransfer;
 
                 e.target == input && loadImg({target: img});
