@@ -205,31 +205,31 @@ socket.on('connect', function(){
 
             socket.on('inputing', inputing);
 
-            send.onclick = function(){
+            send.addEventListener('click', function(e){
                 var msg = input.innerHTML.trim();
                 if(msg){
                     socket.emit('chat', msg);
                     input.innerHTML = '';
                 }
-            }
+            });
 
-            input.oninput = function(){
+            input.addEventListener('input', function(e){
                 socket.emit('inputing');
                //this.innerHTML = this.innerHTML.replace(/<[^(img)(div)][^>]*>/g, '') + '';
-            }
+            });
 
-            input.onkeydown = function(e){
+            input.addEventListener('keydown', function(e){
                 if(e.keyCode == 13 && !e.ctrlKey){
                     send.click();
-                    return false;
+                    e.preventDefault();
                 }
-            }
+            });
 
-            inputname.onkeydown = function(e){
+            inputname.addEventListener('keydown', function(e){
                 e.keyCode == 13 && comfirm.click();
-            }
+            });
 
-            document.ondrop = function(e){
+            document.addEventListener('drop', function(e){
                 let img = e.dataTransfer;
 
                 e.target == input && loadImg({target: img});
@@ -237,11 +237,11 @@ socket.on('connect', function(){
                 //if(img.files.length > 0 || e.target != input){
                     return false;
                 //}     
-            }
+            });
 
-            sendpic.onclick = function(){
+            sendpic.addEventListener('click', function(e){
                 upload.click();
-            }
+            });
 
             socket.on('chat', function(data){
                 sendMsg(data, data.id === socket.id);
@@ -249,7 +249,7 @@ socket.on('connect', function(){
 
             upload.onchange = loadImg;
 
-            document.oncontextmenu = function(e){
+            document.addEventListener('contextmenu', function(e){
                 if(e.target.className === 'pic'){
                     Object.assign(heartDialog.style, {
                         top: `${e.pageY}px`,
@@ -260,9 +260,9 @@ socket.on('connect', function(){
                     heartDialog.pic = e.target.src;
                     return false;
                 }
-            }
+            });
 
-            heartDialog.onclick = function(){
+            heartDialog.addEventListener('click', function(e){
                 if(pics.find(p => p == this.pic)){
                     showTip('该图已收藏', 'warning');
                 }else{
@@ -273,18 +273,18 @@ socket.on('connect', function(){
                     localStorage.setItem('pics', JSON.stringify(pics));
                 }
                 this.style.display = 'none';
-            }
+            });
 
-            heart.onclick = function(){
+            heart.addEventListener('click', function(e){
                 if(this.open){
                     heartPic.style.display = 'none';
                 }else{
                     heartPic.style.display = 'block';
                 }
                 this.open = !this.open; 
-            }
+            });
 
-            picBox.onclick = function(e){
+            picBox.addEventListener('click', function(e){
                 let target = e.target;
                 if(/^heart-img$|^heart-item$/.test(target.className)){
     
@@ -296,16 +296,16 @@ socket.on('connect', function(){
                     heart.open = false;
                     heartPic.style.display = 'none';
                 } 
-            }
+            });
 
-            document.onclick = function(e){
+            document.addEventListener('click', function(e){
                 let child = [...util.$('.tools').querySelectorAll('*')].find(el => el == e.target);
                 let c = [util.$('.send-img'), ...util.$('.send-img').querySelectorAll('*')];
                 if(c.find(el => el == child) || !child){
                     heart.open = false;
                     heartPic.style.display = 'none';
                 }
-            };
+            });
         }
     }); 
 
