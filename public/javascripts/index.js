@@ -176,19 +176,19 @@ const loadImg = function(e){
     uploadForm.reset();
 }
 
-const showHeartDialog = function(){
-
-}
-
 socket.on('connect', function(){
-    comfirm.onclick = function(){
-        var username = inputname.value.replace(/\s/g, '');
+    comfirm.addEventListener('click', function(){
+        let username = inputname.value.replace(/\s/g, '');
         if(username){
             socket.emit('join', username, socket.id);
         }else{
             inputname.focus();
         }
-    } 
+    })
+
+    inputname.addEventListener('keydown', function(e){
+        e.keyCode == 13 && comfirm.click();
+    });
 
     socket.on('conflict' + socket.id, nameconflict)
 
@@ -225,10 +225,6 @@ socket.on('connect', function(){
                 }
             });
 
-            inputname.addEventListener('keydown', function(e){
-                e.keyCode == 13 && comfirm.click();
-            });
-
             document.addEventListener('drop', function(e){
                 let img = e.dataTransfer;
 
@@ -258,7 +254,7 @@ socket.on('connect', function(){
                     });
 
                     heartDialog.pic = e.target.src;
-                    return false;
+                    e.preventDefault();
                 }
             });
 
