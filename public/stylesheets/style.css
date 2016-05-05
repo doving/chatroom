@@ -180,6 +180,11 @@ li{
     border: none;
     resize: none;
     overflow: auto;
+    white-space: pre-wrap;
+}
+.footer .input img{
+    max-width: 60%;
+    max-height: 80%;
 }
 .footer .send{
     bottom: 0;
@@ -201,7 +206,7 @@ li{
 }
 .message{
     position: absolute;
-    left: 0;
+    left: 0;asdf asdf asdf 
     top: 0;
     height: 70%;
     width: 100%;
@@ -229,7 +234,9 @@ li{
 .message .chatbox .chatitem.myself .username{
     text-align: right;
 }
-.message .chatbox .chatitem.myself p{
+.message .chatbox .chatitem.myself .username,
+.message .chatbox .chatitem.myself .msg
+{
     float: right;
 }
 .message .chatitem .msg{
@@ -243,7 +250,11 @@ li{
     padding: 5px 10px;
     display: inline-block;
     word-break: break-all;
+    white-space: pre-wrap;
     z-index: 1;
+}
+.message .chatitem .msg img{
+    max-width: 100%;
 }
 .message .chatbox .chatitem.myself .msg{
     background: #94E500;
