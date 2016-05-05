@@ -151,29 +151,77 @@ const nameconflict = function(username){
     inputname.focus();
 }
 
-const loadImg = function(e){
-    let fr = new FileReader();
-    let img = e.target.files[0];
+const insertCont = function(cont, type){
 
-    if(!img)return;
+    let range = document.createRange();
 
-    if(!/^image\/[a-z]+$/.test(img.type)){
-        showTip('请选择图片', 'warning');
-        return;
+    let selection = window.getSelection();
+
+    let target = selection.anchorNode;
+    //console.log(cont, target);
+    if(!target || (target !== input && target.parentNode !== input))return;
+
+    let start = selection.anchorOffset;
+    let end  = selection.focusOffset;
+    
+
+    let delta = 0;
+    let cursor = 0;
+
+    //cont = cont.replace(/(\r|\n|\r\n){1,2}/g, '<br/>');
+
+    if(target === input){
+        let node = type === 'text' ? document.createTextNode(cont) : util.$c('img', {className: 'pic', src: cont});
+        console.log(target.childNodes[start]);
+        target.insertBefore(node, target.childNodes[start]);
+        cursor = start + 1;
+    }else{
+        if(type === 'text'){
+            let content = target.textContent;
+            target.textContent = content.slice(0, start + delta) + cont + content.slice(end + delta);
+            cursor = start + cont.length;
+        }else{
+            let img = util.$c('img', {className: 'pic', src: cont});
+            let text1 = document.createTextNode(target.textContent.slice(0, start));
+            let text2 = document.createTextNode(target.textContent.slice(end));
+            let frag = document.createDocumentFragment();
+
+            frag.appendChild(text1);
+            frag.appendChild(img);
+            frag.appendChild(text2);
+
+            target.parentNode.replaceChild(frag, target);
+
+            cursor = [...input.childNodes].findIndex(item => item === img) + 1;
+            target = input;
+        }
     }
-    if(img.size > 1024 * 50){
-        showTip('图片不得超过50k', 'warning');
-        return;
+
+    console.log('target=', target.nodeName, 'cursor=', cursor);
+    range.setStart(target, cursor);
+    selection.removeAllRanges();
+    selection.addRange(range);
+}
+
+const loadImg = function(img, isPaste){
+    if(img && /^image\/[a-z]+$/.test(img.type)){
+        if(img.size > 1024 * 100){
+            showTip('图片不得超过100k', 'warning');
+            return;
+        }
+        let fr = new FileReader();
+
+        fr.readAsDataURL(img);
+
+        fr.onload = e => {
+            if(isPaste){
+                insertCont(e.target.result, 'img');
+            }else{
+                input.focus();
+                input.innerHTML += `<img class='pic' src='${e.target.result}'/>`;
+            }            
+        }  
     }
-
-    fr.readAsDataURL(img);
-
-    fr.onload = e => {
-        input.innerHTML += `<img class="pic" src=${e.target.result} />`;
-        e.target.value = '';
-    }
-
-    uploadForm.reset();
 }
 
 socket.on('connect', function(){
@@ -226,13 +274,39 @@ socket.on('connect', function(){
             });
 
             document.addEventListener('drop', function(e){
-                let img = e.dataTransfer;
+                let data = e.dataTransfer;
 
-                e.target == input && loadImg({target: img});
+                [...data.items].forEach(item => {
+                    let type = item.type;
+                    console.log(item);
+                    if(type.match(/^image\//)){
+                        loadImg(item.getAsFile());
+                    }else if(type === 'text/plain'){
+                        item.getAsString(str => {
+                            insertCont(str, /^data:image\/[a-z]+;base64/.test(str) ? 'img' : 'text');
+                        });
+                    }
+                });
 
-                //if(img.files.length > 0 || e.target != input){
-                    return false;
-                //}     
+                e.preventDefault();
+            });
+
+            input.addEventListener('paste', function(e){
+                let data = e.clipboardData;
+
+                [...data.items].forEach(item => {
+                    let type = item.type;
+                    if(type.match(/^image\//)){
+                        loadImg(item.getAsFile(), true);
+                    }else if(type === 'text/plain'){
+                        item.getAsString(str => {
+                            console.log('str=',str);
+                            insertCont(str, 'text')
+                        });
+                    }
+                });
+
+                e.preventDefault();
             });
 
             sendpic.addEventListener('click', function(e){
@@ -243,7 +317,20 @@ socket.on('connect', function(){
                 sendMsg(data, data.id === socket.id);
             });
 
-            upload.onchange = loadImg;
+            upload.addEventListener('change', function(e){
+                let img = this.files[0];
+
+                if(!img) return;
+
+                if(/^image\/[a-z]+$/.test(img.type)){
+                    loadImg(this.files[0]);
+                }else{
+                    showTip('请选择图片', 'warning');
+                }
+                
+                uploadForm.reset();
+            });
+            
 
             document.addEventListener('contextmenu', function(e){
                 if(e.target.className === 'pic'){
