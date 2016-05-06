@@ -214,14 +214,21 @@ const loadImg = function(img, isPaste){
         fr.readAsDataURL(img);
 
         fr.onload = e => {
-            if(isPaste){
-                insertCont(e.target.result, 'img');
-            }else{
-                input.focus();
-                input.innerHTML += `<img class='pic' src='${e.target.result}'/>`;
-            }            
+            isPaste ? insertCont(e.target.result, 'img') : dropInsert(e.target.result);         
         }  
     }
+}
+
+const dropInsert = function(str){
+    let range = document.createRange();
+    let sel = window.getSelection();
+
+    input.innerHTML += /^data:image\/[a-z]+;base64/.test(str) ?
+        `<img class='pic' src=${str}>` : str;
+
+    range.setStart(input, input.childNodes.length);
+    sel.removeAllRanges();
+    sel.addRange(range);
 }
 
 socket.on('connect', function(){
@@ -273,18 +280,15 @@ socket.on('connect', function(){
                 }
             });
 
-            document.addEventListener('drop', function(e){
+            input.addEventListener('drop', function(e){
                 let data = e.dataTransfer;
 
                 [...data.items].forEach(item => {
                     let type = item.type;
-                    console.log(item);
                     if(type.match(/^image\//)){
                         loadImg(item.getAsFile());
                     }else if(type === 'text/plain'){
-                        item.getAsString(str => {
-                            insertCont(str, /^data:image\/[a-z]+;base64/.test(str) ? 'img' : 'text');
-                        });
+                        item.getAsString(dropInsert);
                     }
                 });
 
@@ -297,11 +301,9 @@ socket.on('connect', function(){
                 [...data.items].forEach(item => {
                     let type = item.type;
                     if(type.match(/^image\//)){
-                        console.log('img=', item.getAsFile());
                         loadImg(item.getAsFile(), true);
                     }else if(type === 'text/plain'){
                         item.getAsString(str => {
-                            console.log('str=',str);
                             insertCont(str, 'text')
                         });
                     }
