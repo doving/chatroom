@@ -297,6 +297,7 @@ socket.on('connect', function(){
                 [...data.items].forEach(item => {
                     let type = item.type;
                     if(type.match(/^image\//)){
+                        console.log('img=', item.getAsFile());
                         loadImg(item.getAsFile(), true);
                     }else if(type === 'text/plain'){
                         item.getAsString(str => {
