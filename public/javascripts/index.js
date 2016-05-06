@@ -17,7 +17,7 @@ const uploadForm = util.$('.upload-form');
 const sendpic = util.$('.send-img');
 const heart = util.$('.heart');
 const heartDialog = util.$('.heart-dialog');
-const pics = JSON.parse(localStorage.getItem('pics')||0) || [];
+const PICS = JSON.parse(localStorage.getItem('pics')||0) || [];
 const picBox = util.$('.pics-box');
 const heartPic = util.$('.heart-pics');
 
@@ -34,6 +34,15 @@ const heartImg = function(pics){
             src: pic
         });
 
+        let del = util.$c('div', {
+            className: 'del-img',
+            innerHTML: '×',
+            title: '删除'
+        });
+
+        del.pic = pic;
+
+        div.appendChild(del);
         div.appendChild(img);
         picBox.appendChild(div);
     });
@@ -256,7 +265,7 @@ socket.on('connect', function(){
         if(socket.id === id){
             socket.isLogin = true;
 
-            heartImg(pics);
+            heartImg(PICS);
 
             socket.on('userout', userOut);
 
@@ -351,14 +360,14 @@ socket.on('connect', function(){
             });
 
             heartDialog.addEventListener('click', function(e){
-                if(pics.find(p => p == this.pic)){
+                if(PICS.find(p => p == this.pic)){
                     showTip('该图已收藏', 'warning');
                 }else{
-                    pics.push(this.pic);
+                    PICS.push(this.pic);
 
                     heartImg([this.pic]);
                     
-                    localStorage.setItem('pics', JSON.stringify(pics));
+                    localStorage.setItem('pics', JSON.stringify(PICS));
                 }
                 this.style.display = 'none';
             });
@@ -378,12 +387,19 @@ socket.on('connect', function(){
     
                     let src = target.className === 'heart-item' ? 
                         target.childNodes[0].src : target.src;
-                        
+
                     dropInsert(src);
 
                     heart.open = false;
                     heartPic.style.display = 'none';
-                } 
+                }else if('del-img' === target.className){
+                    let index = PICS.findIndex(pic => pic === target.pic);
+
+                    picBox.removeChild(picBox.childNodes[index]);
+                    PICS.splice(index, 1);
+
+                    localStorage.setItem('pics', JSON.stringify(PICS));
+                }
             });
 
             document.addEventListener('click', function(e){
