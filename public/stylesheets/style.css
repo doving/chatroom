@@ -175,8 +175,10 @@ li{
 }
 .footer .tools .heart-item .heart-img{
     vertical-align: middle;
-    max-width: 98%;
-    max-height: 98%;
+    max-width: calc(100% - 4px);
+    max-height:calc(100% - 4px);
+    max-width: -webkit-calc(100% - 4px);
+    max-height:-webkit-calc(100% - 4px);
 }
 .footer .tools .heart-item:hover{
     border: solid 1px green;
