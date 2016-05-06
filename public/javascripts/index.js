@@ -378,8 +378,8 @@ socket.on('connect', function(){
     
                     let src = target.className === 'heart-item' ? 
                         target.childNodes[0].src : target.src;
-
-                    input.innerHTML += `<img class="pic" src=${src} />`;
+                        
+                    dropInsert(src);
 
                     heart.open = false;
                     heartPic.style.display = 'none';
