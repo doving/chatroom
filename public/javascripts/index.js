@@ -1,6 +1,6 @@
 import util from './util';
-import '../stylesheets/fonticon';
-import '../stylesheets/style';
+/*import '../stylesheets/fonticon';
+import '../stylesheets/style';*/
 
 const socket = io();
 
