@@ -206,7 +206,7 @@ const insertCont = function(cont, type){
 const loadImg = function(img, isPaste){
     if(img && /^image\/[a-z]+$/.test(img.type)){
         if(img.size <= 0)return;
-        
+
         if(img.size > 1024 * 100){
             showTip('图片不得超过100k', 'warning');
             return;
@@ -387,11 +387,19 @@ socket.on('connect', function(){
             });
 
             document.addEventListener('click', function(e){
-                let child = [...util.$('.tools').querySelectorAll('*')].find(el => el == e.target);
-                let c = [util.$('.send-img'), ...util.$('.send-img').querySelectorAll('*')];
-                if(c.find(el => el == child) || !child){
+                let heartPicPos = heartPic.getBoundingClientRect();
+                let heartPos = heart.getBoundingClientRect();
+                let heartDialogPos = heartDialog.getBoundingClientRect();
+
+                let x = e.pageX;
+                let y = e.pageY;
+
+                if(util.isOutside(x, y, heartPicPos) && util.isOutside(x, y, heartPos)){
                     heart.open = false;
                     heartPic.style.display = 'none';
+                }
+                if(util.isOutside(x, y, heartDialogPos)){
+                    heartDialog.style.display = 'none';
                 }
             });
         }
