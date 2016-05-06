@@ -212,10 +212,12 @@ li{
     max-height: 80%;
 }
 .footer .send{
-    bottom: 0;
-    right: 0;
+    bottom: 4px;
+    right: 4px;
     width: 80px;
     height: 30px;
+    border-radius: 4px;
+    border: solid 1px #aaa;
 }
 .users{
     position: absolute;
