@@ -29,4 +29,8 @@ export default {
         return m + '-' + day + ' ' + h + ':' + mi + ':' + s;
     },
 
+    isOutside(x, y, obj) {
+        return x < obj.left || x > obj.right || y > obj.bottom || y < obj.top;
+    },
+
 }
