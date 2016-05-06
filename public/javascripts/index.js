@@ -205,6 +205,8 @@ const insertCont = function(cont, type){
 
 const loadImg = function(img, isPaste){
     if(img && /^image\/[a-z]+$/.test(img.type)){
+        if(img.size <= 0)return;
+        
         if(img.size > 1024 * 100){
             showTip('图片不得超过100k', 'warning');
             return;
