@@ -134,7 +134,7 @@ const showTip = function(msg, type){
 }
 
 const inputing = function(id){
-    inputing.wait = 1000;
+    inputing.wait = 1500;
     clearTimeout(inputing[id]);
     var li = util.$('#id' + id);
 
@@ -280,8 +280,16 @@ socket.on('connect', function(){
             });
 
             input.addEventListener('input', function(e){
+                if(this.isinputing)return;
+
+                this.isinputing = true;
+
                 socket.emit('inputing');
-               //this.innerHTML = this.innerHTML.replace(/<[^(img)(div)][^>]*>/g, '') + '';
+
+                this.st = setTimeout(() => {
+                    clearTimeout(this.st);
+                    this.isinputing = false;
+                }, 1200);
             });
 
             input.addEventListener('keydown', function(e){
