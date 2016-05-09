@@ -72,16 +72,18 @@ const sendMsg = function(data, isMyself){
         username.appendChild(time);
     }
 
-    var msg = util.$c('p', {
-        className: 'msg',
-        innerHTML: data.msg
+    util.decompress(data.msg, msg => {
+        var msg = util.$c('p', {
+            className: 'msg',
+            innerHTML: msg
+        });
+
+        li.appendChild(username);
+        li.appendChild(msg);
+
+        message.appendChild(li);
+        li.scrollIntoView();
     });
-
-    li.appendChild(username);
-    li.appendChild(msg);
-
-    message.appendChild(li);
-    li.scrollIntoView();
 }
 
 const initusers = function(id, users){
@@ -274,7 +276,7 @@ socket.on('connect', function(){
             send.addEventListener('click', function(e){
                 var msg = input.innerHTML.trim();
                 if(msg){
-                    socket.emit('chat', msg);
+                    socket.emit('chat', util.compress(msg));
                     input.innerHTML = '';
                 }
             });

@@ -33,4 +33,20 @@ export default {
         return x < obj.left || x > obj.right || y > obj.bottom || y < obj.top;
     },
 
+    compress(str) {
+        return new Blob([str]);
+    },
+
+    decompress(arraybuffer, callback){
+        let fr = new FileReader();
+
+        let blob = new Blob([arraybuffer]);
+
+        fr.onload = function(e) {
+            callback(e.target.result);
+        }
+
+        fr.readAsText(blob);
+    },
+
 }
