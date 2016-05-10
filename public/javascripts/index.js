@@ -193,7 +193,7 @@ const insertCont = function(cont, type){
 
     if(target === input){
         let node = type === 'text' ? document.createTextNode(cont) : util.$c('img', {className: 'pic', src: cont});
-        console.log(target.childNodes[start]);
+        //console.log(target.childNodes[start]);
         target.insertBefore(node, target.childNodes[start]);
         cursor = start + 1;
     }else{
@@ -218,7 +218,7 @@ const insertCont = function(cont, type){
         }
     }
 
-    console.log('target=', target.nodeName, 'cursor=', cursor);
+    //console.log('target=', target.nodeName, 'cursor=', cursor);
     range.setStart(target, cursor);
     selection.removeAllRanges();
     selection.addRange(range);
