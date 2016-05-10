@@ -33,20 +33,18 @@ export default {
         return x < obj.left || x > obj.right || y > obj.bottom || y < obj.top;
     },
 
-    compress(str) {
-        return new Blob([str]);
+    compress(str, callback) {
+        /*let a = new Date;*/
+        LZMA.compress(str, 1, (result, err) => {
+            /*console.log('time: ', new Date - a);*/
+            callback(err ? str : result);
+        });
     },
 
-    decompress(arraybuffer, callback){
-        let fr = new FileReader();
-
-        let blob = new Blob([arraybuffer]);
-
-        fr.onload = function(e) {
-            callback(e.target.result);
-        }
-
-        fr.readAsText(blob);
+    decompress(bytes, callback){
+        LZMA.decompress(bytes, (result, err) => {
+            callback(err ? bytes : result);
+        });
     },
 
 }

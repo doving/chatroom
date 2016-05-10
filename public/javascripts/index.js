@@ -72,17 +72,27 @@ const sendMsg = function(data, isMyself){
         username.appendChild(time);
     }
 
-    util.decompress(data.msg, msg => {
+   /* var msg = util.$c('p', {
+        className: 'msg',
+        innerHTML: util.decompress(data.msg)
+    });
+
+    li.appendChild(username);
+    li.appendChild(msg);
+
+    message.appendChild(li);
+    li.scrollIntoView();*/
+    util.decompress(data.msg, function(str){
         var msg = util.$c('p', {
             className: 'msg',
-            innerHTML: msg
+            innerHTML: str
         });
 
         li.appendChild(username);
         li.appendChild(msg);
 
         message.appendChild(li);
-        li.scrollIntoView();
+        li.scrollIntoView(false);
     });
 }
 
@@ -218,17 +228,20 @@ const loadImg = function(img, isPaste){
     if(img && /^image\/[a-z]+$/.test(img.type)){
         if(img.size <= 0)return;
 
-        if(img.size > 1024 * 100){
-            showTip('图片不得超过100k', 'warning');
+        let maxsize = 100;
+
+        if(img.size > 1024 * maxsize){
+            showTip(`图片不得超过${maxsize}k`, 'warning');
             return;
         }
-        let fr = new FileReader();
+
+        let fr = new FileReader;
+
+        fr.onload = function(e){
+            isPaste ? insertCont(e.target.result) : dropInsert(e.target.result);
+        }
 
         fr.readAsDataURL(img);
-
-        fr.onload = e => {
-            isPaste ? insertCont(e.target.result, 'img') : dropInsert(e.target.result);         
-        }  
     }
 }
 
@@ -274,10 +287,14 @@ socket.on('connect', function(){
             socket.on('inputing', inputing);
 
             send.addEventListener('click', function(e){
-                var msg = input.innerHTML.trim();
+                let msg = input.innerHTML.trim();
                 if(msg){
-                    socket.emit('chat', util.compress(msg));
-                    input.innerHTML = '';
+                    /*socket.emit('chat', util.compress(msg));
+                    input.innerHTML = '';*/
+                    util.compress(msg, function(str){
+                        socket.emit('chat', str);
+                        input.innerHTML = '';
+                    });
                 }
             });
 
