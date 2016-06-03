@@ -58,28 +58,85 @@ li{
     width: 25%;
     background: #56AF17;
 }
-#cotainer{
-    width: 100%;
-    min-height: 100%;
-    position: relative;
-}
-.left{
+#container{
+    width: 1000px;
+    height: 700px;
+    //min-height: 100%;
     position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 75%;
-    min-width: calc(100% - 300px);
-    min-width: -webkit-calc(100% - 300px);
+    left: 50%;
+    top: 50%;
+    margin: -350px auto auto -500px;
 }
 .right{
     position: absolute;
     right: 0;
     top: 0;
+    height: 100%;
+    width: 75%;
+    min-width: calc(100% - 300px);
+    min-width: -webkit-calc(100% - 300px);
+    background: #eee;
+    border: solid 1px #ddd;
+    border-left: none; 
+}
+.left{
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 25%;
     max-width: 300px;
     height: 100%;
     float: right;
+    background: #2e3238;
+    color: #fff; 
+}
+.left .myself-info{
+    padding: 16px;
+    height: 120px;
+    border-bottom: 1px solid #24272C;
+}
+.left .myself-info .info{
+    height: 40px;
+    line-height: 40px;
+    vertical-align: middle;
+}
+.left .myself-info .head{
+    vertical-align: middle;
+    height: 40px;
+    width: 40px;
+    border: none;
+}
+.left .myself-info .name{
+    margin-left: 10px;
+    font-size: 18px;
+}
+.left .myself-info .search{
+    margin-top: 20px;
+    width: 100%;
+    height: 32px;
+    padding-left: 36px;
+    background: #26292E;
+    position: relative;
+}
+.left .myself-info .search .search-btn{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 100%;
+    background: #26292E;
+    border: 0;
+    outline: none;
+    color: #fff;
+}
+.left .myself-info .search .search-text{
+    position: absolute;
+    left: 32px;
+    top: 0;
+    right: 0;
+    height: 100%;
+    background: #26292E;
+    color: #fff;
 }
 .footer{
     position: absolute;
@@ -222,29 +279,36 @@ li{
     background: #3D8B05;
 }
 .users{
-    position: absolute;
-    top: 0;
-    right: 0;
+    position: relative;
     width: 100%;
-    height: 100%;
-    border: solid 1px #ccc; 
+    height: calc(100% - 120px);
+    height: -webkit-calc(100% - 120px);
 }
 #container .time{
     color: #111;
     font-weight: normal;
 }
+.message-title{
+    position: absolute;
+    left: 2%;
+    top: 0;
+    width: 96%;
+    height: 50px;
+    border-bottom: solid #ddd 1px;
+}
 .message{
     position: absolute;
-    left: 0;asdf asdf asdf 
-    top: 0;
-    height: 70%;
+    left: 0;
+    top: 50px;
+    height: calc(70% - 60px);
+    height: -webkit-calc(70% - 50px);
     width: 100%;
 }
-.users .user-title{
+.users .user-all{
     height: 30px;
     line-height: 20px;
     padding: 5px;
-    border-bottom: solid 1px #ccc;
+    border-bottom: 1px solid #24272C;
 }
 .message .chatbox{
     height: 100%;
@@ -274,7 +338,7 @@ li{
     margin-top: 5px;
     left: 20px;
     max-width: 80%;
-    background: #eee;
+    background: #fff;
     border-radius: 5px;
     padding: 5px 10px;
     display: inline-block;
@@ -309,7 +373,7 @@ li{
 }
 .message .chatitem.others .msg::after{
     left: 0px;
-    background: #eee;
+    background: #fff;
     transform: translate(6px, -11px) rotateX(-186deg) rotateZ(-73deg) skewX(233deg);
     -webkit-transform: translate(6px, -11px) rotateX(-186deg) rotateZ(-73deg) skewX(233deg);
 }
@@ -350,8 +414,10 @@ li{
     height: -webkit-calc(100% - 30px);
 }
 .users ul li{
-    padding: 2px 0;
+    height: 50px;
+    padding: 4px 16px;
     line-height: 16px;
+    border-bottom: 1px solid #24272C;
 }
 .users li .inputing{
     color: red;

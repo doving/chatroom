@@ -24,6 +24,8 @@ var server = http.createServer(app);
  
 var io = require('socket.io')(server);
 
+var socketMap = {};
+
 io.on('connection', socket => {
 
   socket.on('join', (username, id) => {
@@ -33,6 +35,7 @@ io.on('connection', socket => {
       socket.username = username;
       socket.userid = id;
       users.push({id: id, username: username});
+      socketMap[id] = socket;
       io.emit('userjoin', username, socket.userid, users);
     }
   });
@@ -50,6 +53,31 @@ io.on('connection', socket => {
     });
   });
 
+  socket.on('startprivate', data => {
+    var room = data.room;
+    if(!room){
+      room = socket.userid + data.id;
+      socket.join(room);
+      socketMap[data.id].join(room);
+
+      io.to(room).emit('joinroom', {
+        room: room,
+        id: [socket.userid, data.id]
+      });
+    }   
+  });
+
+  socket.on('private', data => {
+    var room = data.room;
+    io.to(room).emit('private', {
+      username: socket.username,
+      id: socket.userid,
+      msg: msg,
+      time: new Date - 0,
+      room: room
+    }); 
+  });
+
   socket.on('disconnect', () => {
     var id = socket.userid;
     var index = users.findIndex(item => item.id === id);
@@ -57,9 +85,11 @@ io.on('connection', socket => {
       var username = users[index].username;
       users.splice(index, 1);
       io.emit('userout', id, username, users.length);
+      delete socketMap[id];
     }
   });
 });
+
 /**
  * Listen on provided port, on all network interfaces.
  */

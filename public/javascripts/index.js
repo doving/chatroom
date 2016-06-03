@@ -20,6 +20,12 @@ const heartDialog = util.$('.heart-dialog');
 const PICS = JSON.parse(localStorage.getItem('pics')||0) || [];
 const picBox = util.$('.pics-box');
 const heartPic = util.$('.heart-pics');
+const myhead = util.$('.myself-info .head');
+const myname = util.$('.myself-info .name');
+
+let prevTarget = '';//上次的聊天窗口
+let currentTarget = 'hall';//默认当前窗口是大厅
+let messages = {};//各个窗口聊天信息的数据
 
 inputname.focus();
 
@@ -103,8 +109,10 @@ const initusers = function(id, users){
     users.forEach(function(user){
         var li = util.$c('li', {
             id: 'id' + user.id,
+            className: 'user-item',
             textContent: user.username + (user.id === id ? '(我)' : '')
         });
+        
         userlist.appendChild(li);
     });
 }
@@ -114,6 +122,7 @@ const userJoin = function(username, id, users){
     
     if(isMyself){
         shade.style.display = 'none';
+        myname.textContent = username;
         input.focus();
     }else if(!socket.isLogin){
         return;
@@ -292,7 +301,7 @@ socket.on('connect', function(){
                     /*socket.emit('chat', util.compress(msg));
                     input.innerHTML = '';*/
                     util.compress(msg, function(str){
-                        socket.emit('chat', str);
+                        socket.emit(currentTarget == 'hall' ? 'chat' : 'private', str);
                         input.innerHTML = '';
                     });
                 }
@@ -355,6 +364,10 @@ socket.on('connect', function(){
             });
 
             socket.on('chat', function(data){
+                sendMsg(data, data.id === socket.id);
+            });
+
+            socket.on('private', function(data){
                 sendMsg(data, data.id === socket.id);
             });
 
@@ -445,6 +458,31 @@ socket.on('connect', function(){
                     heartDialog.style.display = 'none';
                 }
             });
+
+            userlist.addEventListener('click', function(e){
+                if(e.target.className !== 'user-item')return;
+
+                currentTarget = e.target.id;
+
+                let room = e.target.dataset.room;
+
+                if(!currentTarget){
+                    socket.emit('startprivate', {
+                        id: currentTarget.slice(2), 
+                        room: room
+                    });
+                }
+            });
+
+            socket.on('joinroom', function(data){
+                let otherid = data.id.find(id => id != socket.id);
+                util.$('#id' + otherid).dataset.room = data.room;
+            });
+
+            socket.on('private', function(data){
+                sendMsg(data.msg, data.id === socket.id);
+            });
+
         }
     }); 
 

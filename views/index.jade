@@ -8,7 +8,8 @@ block content
     #container
         .heart-dialog 收藏图片
             i.icon-heart
-        .left
+        .right
+            .message-title
             .message
                 ul.chatbox
                     //- li.chatitem.others
@@ -35,9 +36,16 @@ block content
                         .pics-box
                 section.input(contentEditable='true')
                 button.send 发送
-        .right
+        .left
+            .myself-info
+                .info
+                    img.head
+                    span.name
+                .search
+                    button.search-btn s
+                    input.search-text(placeholder='搜索用户')
             .users
-                p.user-title 成员(
+                p.user-all 大厅(
                     span.nums 0
                     |)
                 ul.userlist
