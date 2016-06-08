@@ -1,62 +1,61 @@
 extends layout
 
 block content
-    #shade
-        .shadedialog
-            input.inputname(type='text', placeholder='请输入昵称', maxlength='10')
-            input.confirm(type='button', value='确定')
+    //- #shade
+    //-     .shadedialog
+    //-         input.inputname(type='text', placeholder='请输入昵称', maxlength='10')
+    //-         input.confirm(type='button', value='确定')
     #container
-        .heart-dialog 收藏图片
-            i.icon-heart
-        .right
-            .message-title
-            .message
-                ul.chatbox
-                    //- li.chatitem.others
-                    //-     p.username 用户
-                    //-     p.msg
-                    //-         |你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔
-                    //-         .heart-dialog 收藏表情
+        //- .heart-dialog 收藏图片
+        //-     i.icon-heart
+        //- .right
+        //-     .message-title
+        //-     .message
+        //-         ul.chatbox
+        //-             //- li.chatitem.others
+        //-             //-     p.username 用户
+        //-             //-     p.msg
+        //-             //-         |你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔
+        //-             //-         .heart-dialog 收藏表情
                             
-                    //- li.chatitem.myself
-                    //-     p.username 我自sadg 己
-                    //-     p.msg 你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔
+        //-             //- li.chatitem.myself
+        //-             //-     p.username 我自sadg 己
+        //-             //-     p.msg 你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔你好好好懊悔
                             
-                    //- li.chatitem.welcome
-                    //-     p.msgcontent aaa加入群聊
-            .footer
-                .tools
-                    form.upload-form
-                        input.upload(type='file', accept="image/*;capture=camera")
-                    .tool.send-img(title='发送图片')
-                        i.icon-picture
-                    .tool.heart(title='我的收藏')
-                        i.icon-heart
-                    .heart-pics
-                        .pics-box
-                section.input(contentEditable='true')
-                button.send 发送
-        .left
-            .myself-info
-                .info
-                    img.head
-                    span.name
-                .search
-                    button.search-btn s
-                    input.search-text(placeholder='搜索用户')
-            .users
-                p.user-all 大厅(
-                    span.nums 0
-                    |)
-                ul.userlist
-                    //- li 阿萨德
-                    //- li 阿萨德
-                    //- li 阿萨德
-                    //- li 阿萨德阿萨德阿萨asdf 德阿萨德
+        //-             //- li.chatitem.welcome
+        //-             //-     p.msgcontent aaa加入群聊
+        //-     .footer
+        //-         .tools
+        //-             form.upload-form
+        //-                 input.upload(type='file', accept="image/*;capture=camera")
+        //-             .tool.send-img(title='发送图片')
+        //-                 i.icon-picture
+        //-             .tool.heart(title='我的收藏')
+        //-                 i.icon-heart
+        //-             .heart-pics
+        //-                 .pics-box
+        //-         section.input(contentEditable='true')
+        //-         button.send 发送
+        //- .left
+        //-     .myself-info
+        //-         .info
+        //-             img.head
+        //-             span.name
+        //-         .search
+        //-             button.search-btn s
+        //-             input.search-text(placeholder='搜索用户')
+        //-     .users
+        //-         p.user-all 大厅(
+        //-             span.nums 0
+        //-             |)
+        //-         ul.userlist
+        //-             //- li 阿萨德
+        //-             //- li 阿萨德
+        //-             //- li 阿萨德
+        //-             //- li 阿萨德阿萨德阿萨asdf 德阿萨德
         
     script(type='text/javascript', src='/socket.io/socket.io.js')
-    script(type='text/javascript', src='/javascripts/lzma_worker-min.js')
-    script(src='/dist/bundle.js')
+    script(src='/dist/app.js')
         
 
         

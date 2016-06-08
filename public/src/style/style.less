@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 body {
-  font: 14px 微软雅黑, Helvetica, Arial, sans-serif;
+  font: 14px "微软雅黑", Helvetica, Arial, sans-serif;
 }
 input, button{
     height: 100%;
@@ -73,8 +73,8 @@ li{
     top: 0;
     height: 100%;
     width: 75%;
-    min-width: calc(100% - 300px);
-    min-width: -webkit-calc(100% - 300px);
+    min-width: calc(~'100% - 300px');
+    min-width: -webkit-calc(~'100% - 300px');
     background: #eee;
     border: solid 1px #ddd;
     border-left: none; 
@@ -232,10 +232,10 @@ li{
 }
 .footer .tools .heart-item .heart-img{
     vertical-align: middle;
-    max-width: calc(100% - 4px);
-    max-height:calc(100% - 4px);
-    max-width: -webkit-calc(100% - 4px);
-    max-height:-webkit-calc(100% - 4px);
+    max-width: calc(~'100% - 4px');
+    max-height:calc(~'100% - 4px');
+    max-width: -webkit-calc(~'100% - 4px');
+    max-height:-webkit-calc(~'100% - 4px');
 }
 .footer .tools .heart-item:hover{
     border: solid 1px green;
@@ -278,12 +278,6 @@ li{
 .footer .send:hover{
     background: #3D8B05;
 }
-.users{
-    position: relative;
-    width: 100%;
-    height: calc(100% - 120px);
-    height: -webkit-calc(100% - 120px);
-}
 #container .time{
     color: #111;
     font-weight: normal;
@@ -300,8 +294,8 @@ li{
     position: absolute;
     left: 0;
     top: 50px;
-    height: calc(70% - 60px);
-    height: -webkit-calc(70% - 50px);
+    height: calc(~'70% - 60px');
+    height: -webkit-calc(~'70% - 50px');
     width: 100%;
 }
 .users .user-all{
@@ -407,17 +401,26 @@ li{
 .message .chatitem.msgitem.warning .msgcontent{
     background: #FF7B7B;
 }
-.users ul{
-    padding: 10px 5px;
-    overflow: auto;
-    height: calc(100% - 30px);
-    height: -webkit-calc(100% - 30px);
-}
-.users ul li{
-    height: 50px;
-    padding: 4px 16px;
-    line-height: 16px;
-    border-bottom: 1px solid #24272C;
+.users{
+    position: relative;
+    width: 100%;
+    height: calc(~'100% - 120px');
+    height: -webkit-calc(~'100% - 120px');
+    .userlist{
+        overflow: auto;
+        height: 100%;
+        .item{
+            height: 60px;
+            padding: 10px 16px;
+            border-bottom: 1px solid #292C33;
+            .head{
+                height: 40px;
+                width: 40px;
+                vertical-align: top;
+                margin-right: 10px;
+            }
+        }
+    }
 }
 .users li .inputing{
     color: red;
