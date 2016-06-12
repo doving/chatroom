@@ -1,21 +1,18 @@
-*{
+div, p, input, button, section, i, li, ul, body{
     padding: 0;
     margin: 0;
-    box-sizing: border-box;
-}
-body {
-  font: 14px "微软雅黑", Helvetica, Arial, sans-serif;
+    box-sizing: border-box;font: 14px "微软雅黑", Helvetica, Arial, sans-serif;
 }
 input, button{
     height: 100%;
     outline: none;
     border: none;
 }
-input[type='text']{
-    padding: 10px;
-}
 li{
     list-style: none;
+}
+.none{
+    display: none;
 }
 .heart-dialog{
     position: absolute;
@@ -30,35 +27,48 @@ li{
     color: #f00;
     cursor: pointer;
 }
-#shade{
+.login{
     position: absolute;
     height: 100%;
     width: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 10;
+    .shade-input, .upload{
+        position: relative;
+        margin: 0 auto;
+        background: #eee;
+        top: 40%;
+    }
+    .shade-input{
+        width: 300px;
+        height: 40px;
+        .inputname{
+            height: 100%;
+            width: 75%;
+            padding: 5px;
+            &.conflict{
+                background: pink;
+            }
+        }
+        .confirm{
+            width: 25%;
+            background: #56AF17;
+        }
+
+    }
+    .upload{
+        height: 60px;
+        width: 60px;
+        transform: translateY(-10px);
+        -webkit-transform: translateY(-10px);
+        .head{
+            height: 100%;
+            width: 100%;
+            cursor: pointer;
+        }
+    }
 }
-.inputname.conflict{
-    background: pink;
-}
-.shadedialog{
-    position: relative;
-    width: 30%;
-    height: 40px;
-    margin: 0 auto;
-    background: #eee;
-    top: 40%;
-}
-.shadedialog input{
-    height: 100%;
-}
-.shadedialog input[type='text']{
-    width: 75%;
-}
-.shadedialog input[type='button']{
-    width: 25%;
-    background: #56AF17;
-}
-#container{
+.main{
     width: 1000px;
     height: 700px;
     //min-height: 100%;
@@ -406,6 +416,11 @@ li{
     width: 100%;
     height: calc(~'100% - 120px');
     height: -webkit-calc(~'100% - 120px');
+    .head{
+        border-radius: 3px;
+        height: 40px;
+        width: 40px;
+    }
     .userlist{
         overflow: auto;
         height: 100%;
@@ -414,12 +429,72 @@ li{
             padding: 10px 16px;
             border-bottom: 1px solid #292C33;
             .head{
-                height: 40px;
-                width: 40px;
                 vertical-align: top;
                 margin-right: 10px;
             }
+            &.hall{
+                .head{
+                    float: left;                   
+                    background: #fff;
+                    padding: 2px;
+                    .hall-head{
+                        float: left;
+                    }
+                   &.nine{
+                        .hall-head{
+                            height: 32px / 3;
+                            width: 32px / 3; 
+                            &:nth-child(3n+2),
+                            &:nth-child(3n+3){
+                                margin-left: 2px;
+                            }
+                            &:nth-child(n+4){
+                                margin-top: 2px;
+                            }
+                        }
+                       
+                    }
+                    &.four{
+                        .hall-head{
+                            height: 17px;
+                            width: 17px;
+                            &:nth-child(2n+0){
+                                margin-left: 2px;
+                            }
+                            &:nth-child(n+3){
+                                margin-top: 2px;
+                            }
+                        }
+                        
+                    }
+                    &.three{
+                        .hall-head{
+                            height: 17px;
+                            width: 17px;
+                            &:first-child{
+                                float: none;
+                                display: block;
+                                margin: 0 auto 2px auto;
+                            }
+                            &:last-child{
+                                margin-left: 2px;
+                            }
+                        }
+                    }
+                    &.two{
+                        .hall-head{
+                            height: 17px;
+                            width: 17px;
+                            margin: 9.5px 0;
+                            &:first-child{
+                                margin-right: 2px;
+                            }
+                        }
+                    }
+                }
+            }
         }
+
     }
 }
 .users li .inputing{

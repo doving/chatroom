@@ -2,13 +2,14 @@ import React from 'react';
 
 export default React.createClass({
 	render() {
-		const { name, head } = this.props.myself;
+		const { defaultHead, myself } = this.props;
+		const { nickname, head } = myself;
 
 		return (
 			<div className='myself-info'>
 				<div className='info'>
-					<img className='head' src={head} />
-					<span className='name'>{name}</span>
+					<img className='head' src={head || defaultHead} />
+					<span className='name'>{nickname}</span>
 				</div>
 			</div>
 		);

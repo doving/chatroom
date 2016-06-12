@@ -18,7 +18,9 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
-var users = [];
+var users = [
+  /*{id: 'xxx', nickname: 'xxx'}*/
+];
 
 var server = http.createServer(app);
  
@@ -28,15 +30,20 @@ var socketMap = {};
 
 io.on('connection', socket => {
 
-  socket.on('join', (username, id) => {
-    if(users.find(item => item.username === username)){
-      io.emit('conflict'+id, username);
+  socket.on('login', user => {
+    if(users.find(item => item.nickname === user.nickname)){
+      socket.emit('conflict', user.nickname);
     }else{
-      socket.username = username;
-      socket.userid = id;
-      users.push({id: id, username: username});
-      socketMap[id] = socket;
-      io.emit('userjoin', username, socket.userid, users);
+      var id = socket.id;
+      var user = {id: id, nickname: user.nickname, head: user.head};
+      socket.emit('logined', {
+        myself: user,
+        users: users
+      });
+
+      users.push(user);
+      socket.broadcast.emit('userJoin', user);
+      
     }
   });
 
@@ -46,7 +53,7 @@ io.on('connection', socket => {
 
   socket.on('chat', msg => {
     io.emit('chat', {
-      username: socket.username,
+      nickname: socket.nickname,
       id: socket.userid,
       msg: msg,
       time: new Date - 0
@@ -70,7 +77,7 @@ io.on('connection', socket => {
   socket.on('private', data => {
     var room = data.room;
     io.to(room).emit('private', {
-      username: socket.username,
+      nickname: socket.nickname,
       id: socket.userid,
       msg: msg,
       time: new Date - 0,
@@ -79,12 +86,12 @@ io.on('connection', socket => {
   });
 
   socket.on('disconnect', () => {
-    var id = socket.userid;
+    var id = socket.id;
     var index = users.findIndex(item => item.id === id);
     if(index > -1){
-      var username = users[index].username;
+      var nickname = users[index].nickname;
       users.splice(index, 1);
-      io.emit('userout', id, username, users.length);
+      io.emit('userout', id, nickname, users.length);
       delete socketMap[id];
     }
   });

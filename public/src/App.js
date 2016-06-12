@@ -1,20 +1,21 @@
-import React        from 'react';
-import { connect }  from 'react-redux';
+import React           from 'react';
+import { connect }     from 'react-redux';
 
 import User            from './components/user';
 import Message         from './components/message';
-import Send            from './components/send';
+import Login           from './components/Login';
 
 const App =  React.createClass({
 	render() {
-		const { user, message, send } = this.props;
+		const { user, message, send, dispatch } = this.props;
 
 		return(
 			<div>
-				<User user={user}/>
-				<Message user={user} message={message}>
-					<Send />
-				</Message>
+				<Login dispatch={dispatch} isLogin={user.isLogin} defaultHead={user.defaultHead}/>
+				<div className='main'>
+					<User user={user}/>
+					<Message user={user} message={message} />
+				</div>
 			</div>
 		)
 	}

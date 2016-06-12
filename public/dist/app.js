@@ -21153,9 +21153,9 @@ var _message = require('./components/message');
 
 var _message2 = _interopRequireDefault(_message);
 
-var _send = require('./components/send');
+var _Login = require('./components/Login');
 
-var _send2 = _interopRequireDefault(_send);
+var _Login2 = _interopRequireDefault(_Login);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21166,16 +21166,18 @@ var App = _react2.default.createClass({
 		var user = _props.user;
 		var message = _props.message;
 		var send = _props.send;
+		var dispatch = _props.dispatch;
 
 
 		return _react2.default.createElement(
 			'div',
 			null,
-			_react2.default.createElement(_user2.default, { user: user }),
+			_react2.default.createElement(_Login2.default, { dispatch: dispatch, isLogin: user.isLogin, defaultHead: user.defaultHead }),
 			_react2.default.createElement(
-				_message2.default,
-				{ user: user, message: message },
-				_react2.default.createElement(_send2.default, null)
+				'div',
+				{ className: 'main' },
+				_react2.default.createElement(_user2.default, { user: user }),
+				_react2.default.createElement(_message2.default, { user: user, message: message })
 			)
 		);
 	}
@@ -21187,7 +21189,171 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(App);
 
-},{"./components/message":198,"./components/send":199,"./components/user":202,"react":180,"react-redux":33}],195:[function(require,module,exports){
+},{"./components/Login":199,"./components/message":203,"./components/user":206,"react":180,"react-redux":33}],195:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _userAction = require('./userAction');
+
+var _userAction2 = _interopRequireDefault(_userAction);
+
+var _messageAction = require('./messageAction');
+
+var _messageAction2 = _interopRequireDefault(_messageAction);
+
+var _sendAction = require('./sendAction');
+
+var _sendAction2 = _interopRequireDefault(_sendAction);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = Object.freeze(Object.assign({}, _userAction2.default, _messageAction2.default, _sendAction2.default));
+
+},{"./messageAction":196,"./sendAction":197,"./userAction":198}],196:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.default = {};
+
+},{}],197:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.default = {};
+
+},{}],198:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _ACTIONTYPE = require('../config/ACTIONTYPE');
+
+var _ACTIONTYPE2 = _interopRequireDefault(_ACTIONTYPE);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+	userJoin: function userJoin(user) {
+		var isMyself = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+		return {
+			type: _ACTIONTYPE2.default.USER_JOIN,
+			user: user,
+			isMyself: isMyself
+		};
+	}
+};
+
+},{"../config/ACTIONTYPE":207}],199:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _actions = require('../../actions');
+
+var _actions2 = _interopRequireDefault(_actions);
+
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
+
+exports.default = _react2.default.createClass({
+	displayName: 'Login',
+
+	socket: null,
+	connected: false,
+	getInitialState: function getInitialState() {
+		return {
+			head: this.props.defaultHead,
+			placeholder: '请输入昵称',
+			conflict: false
+		};
+	},
+	render: function render() {
+		var _this = this;
+
+		var isLogin = this.props.isLogin;
+
+		return _react2.default.createElement('div', { className: isLogin ? 'none' : 'login' }, _react2.default.createElement('div', { className: 'upload' }, _react2.default.createElement('input', { className: 'none', ref: 'upload', type: 'file', accept: 'image/*;capture=camera', onChange: this.uploadHandler }), _react2.default.createElement('img', { className: 'head', src: this.state.head, onClick: function onClick(e) {
+				return _this.refs.upload.click();
+			}, title: '上传头像' })), _react2.default.createElement('div', { className: 'shade-input' }, _react2.default.createElement('input', { ref: 'nickname', className: 'inputname' + (this.state.conflict ? ' conflict' : ''),
+			maxLength: '20', placeholder: this.state.placeholder, onKeyDown: this.keyDownHandler }), _react2.default.createElement('button', { className: 'confirm', onClick: this.loginHandler }, '确定')));
+	},
+	componentDidMount: function componentDidMount() {
+		var _this2 = this;
+
+		var dispatch = this.props.dispatch;
+
+		var socket = io();
+
+		this.socket = socket;
+
+		socket.on('connect', function () {
+			socket.on('logined', function (user) {
+				dispatch(_actions2.default.userJoin(user, true));
+			});
+
+			socket.on('userJoin', function (user) {
+				dispatch(_actions2.default.userJoin(user));
+			});
+
+			socket.on('conflict', function (nickname) {
+				_this2.setState({ placeholder: '该用户名已被占用', conflict: true });
+				_this2.refs.nickname.value = '';
+			});
+		});
+	},
+	keyDownHandler: function keyDownHandler(e) {
+		if (e.keyCode === 13) {
+			this.loginHandler();
+		}
+	},
+	uploadHandler: function uploadHandler(e) {
+		var _this3 = this;
+
+		var file = e.target.files[0];
+		if (!file) return;
+		var unit = 40;
+		var img = document.createElement('img');
+
+		img.src = URL.createObjectURL(file);
+		img.onload = function () {
+			var can = document.createElement('canvas');
+			can.height = can.width = unit;
+
+			var ctx = can.getContext('2d');
+
+			ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, unit, unit);
+			var url = can.toDataURL('image/jpeg', 0.6);
+
+			_this3.setState({ head: url });
+			URL.revokeObjectURL(img.src);
+		};
+	},
+	loginHandler: function loginHandler() {
+		var nickname = this.refs.nickname.value.trim();
+		var head = this.state.head;
+
+		nickname ? this.socket.emit('login', { nickname: nickname, head: head }) : this.refs.nickname.focus();
+	}
+});
+
+},{"../../actions":195,"react":180}],200:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21207,7 +21373,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"react":180}],196:[function(require,module,exports){
+},{"react":180}],201:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21270,7 +21436,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"react":180}],197:[function(require,module,exports){
+},{"react":180}],202:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21323,7 +21489,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"react":180}],198:[function(require,module,exports){
+},{"react":180}],203:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21366,60 +21532,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"./Head":195,"./Message":196,"./Send":197,"react":180}],199:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = _react2.default.createClass({
-	displayName: 'send',
-	render: function render() {
-		return _react2.default.createElement(
-			'div',
-			{ className: 'footer' },
-			_react2.default.createElement(
-				'div',
-				{ className: 'tools' },
-				_react2.default.createElement(
-					'form',
-					{ className: 'upload-form' },
-					_react2.default.createElement('input', { className: 'upload', type: 'file', accept: 'image/*;capture=camera' })
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'tool send-img', title: '发送图片' },
-					_react2.default.createElement('i', { className: 'icon-picture' })
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'tool heart', title: '我的收藏' },
-					_react2.default.createElement('i', { className: 'icon-heart' })
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'heart-pics' },
-					_react2.default.createElement('div', { className: 'pics-box' })
-				)
-			),
-			_react2.default.createElement('section', { className: 'input', contentEditable: 'true' }),
-			_react2.default.createElement(
-				'button',
-				{ className: 'send' },
-				'发送'
-			)
-		);
-	}
-});
-
-},{"react":180}],200:[function(require,module,exports){
+},{"./Head":200,"./Message":201,"./Send":202,"react":180}],204:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21435,9 +21548,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = _react2.default.createClass({
 	displayName: 'MyselfInfo',
 	render: function render() {
-		var _props$myself = this.props.myself;
-		var name = _props$myself.name;
-		var head = _props$myself.head;
+		var _props = this.props;
+		var defaultHead = _props.defaultHead;
+		var myself = _props.myself;
+		var nickname = myself.nickname;
+		var head = myself.head;
 
 
 		return _react2.default.createElement(
@@ -21446,18 +21561,18 @@ exports.default = _react2.default.createClass({
 			_react2.default.createElement(
 				'div',
 				{ className: 'info' },
-				_react2.default.createElement('img', { className: 'head', src: head }),
+				_react2.default.createElement('img', { className: 'head', src: head || defaultHead }),
 				_react2.default.createElement(
 					'span',
 					{ className: 'name' },
-					name
+					nickname
 				)
 			)
 		);
 	}
 });
 
-},{"react":180}],201:[function(require,module,exports){
+},{"react":180}],205:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21468,34 +21583,37 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'UserList',
 	render: function render() {
-		var list = this.props.list;
+		var _props = this.props;
+		var list = _props.list;
+		var defaultHead = _props.defaultHead;
 
+		var heads = [],
+		    users = [];
 
-		return _react2.default.createElement(
-			'div',
-			{ className: 'users' },
-			_react2.default.createElement(
-				'ul',
-				{ className: 'userlist' },
-				list.map(function (item, index) {
-					return _react2.default.createElement(
-						'li',
-						{ className: 'item', key: index },
-						_react2.default.createElement('img', { className: 'head', src: item.head }),
-						item.name
-					);
-				})
-			)
-		);
+		var len = list.length;
+
+		list.forEach(function (item, index) {
+			users.push(_react2.default.createElement('li', { className: 'item', key: index }, _react2.default.createElement('img', { className: 'head', src: item.head || defaultHead }), item.nickname));
+
+			if (index < 9) {
+				heads.push(_react2.default.createElement('img', { key: index, className: 'hall-head', src: item.head || defaultHead }));
+			}
+		});
+
+		var cls = len > 4 ? 'nine' : len == 4 ? 'four' : len == 3 ? 'three' : 'two';
+
+		return _react2.default.createElement('div', { className: 'users' }, _react2.default.createElement('ul', { className: 'userlist' }, _react2.default.createElement('li', { className: 'item hall' + (len > 1 ? '' : ' none') }, _react2.default.createElement('div', { className: 'head ' + cls }, heads), '大厅（', len, '）'), users));
 	}
 });
 
-},{"react":180}],202:[function(require,module,exports){
+},{"react":180}],206:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21522,26 +21640,28 @@ exports.default = _react2.default.createClass({
 		var _props$user = this.props.user;
 		var myself = _props$user.myself;
 		var list = _props$user.list;
+		var defaultHead = _props$user.defaultHead;
 
 
 		return _react2.default.createElement(
 			'div',
 			{ className: 'left' },
-			_react2.default.createElement(_MyselfInfo2.default, { myself: myself }),
-			_react2.default.createElement(_UserList2.default, { list: list })
+			_react2.default.createElement(_MyselfInfo2.default, { myself: myself, defaultHead: defaultHead }),
+			_react2.default.createElement(_UserList2.default, { list: list, defaultHead: defaultHead })
 		);
 	}
 });
 
-},{"./MyselfInfo":200,"./UserList":201,"react":180}],203:[function(require,module,exports){
-"use strict";
+},{"./MyselfInfo":204,"./UserList":205,"react":180}],207:[function(require,module,exports){
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.default = Object.freeze({});
+exports.default = Object.freeze({
+	USER_JOIN: 'USER_JOIN' });
 
-},{}],204:[function(require,module,exports){
+},{}],208:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21549,19 +21669,41 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = Object.freeze({
 	user: {
+		defaultHead: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAoACgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD0TUbv7DZPOE8xwQkaZxvdiFVc9ssQM9s5qhbaDG8BOqyyXdw7mR/30nlqSc4RSx2gdBTfFHmtHpkMIyZNSt9w/wBlW3n/ANAq7LbX76vBcx6iI7JExJaeSD5h+bnfnI6rx/s+5oAgOjCAbtNvbq2lB48yZ54yP7pRyQB/u7T6EU+11Flu00/UVWK9ZSYyufLnA6lM9Dzyp5HuPmNiaxgmv4Lx/M823DBMSELg9cjoaTUbGO/tvKY7JEIeGUDLRSD7rD3Hp0IyDwTQBboqppV095pltcTKqTOg81F6JIOGX8GBH4UUARa3J9nsPtmxW+yyJMxYZ2IGHmMPcIXNXtw2bl+YYyMd6U1hwxXugqYoo5L7TAxKInM1svXaB/y0QdgPmAwAGoAs/wBqXv8A0L+pf9/Lf/47V+2leaBZJLeS3Zs5jkKll577SR+RrOk8R6VCqtczy26s20NcW8kSk+mWUDPB49qJNaSYKmkwSX0smNropWED+80hG3A7gZb0BoAXw7n+z5/+v67x/wCBElFWtLs/sGnxWxkMrrlpJCMeY7EszY7ZYk47ZooAt0UUUAY/ie1Nxp9vIlu88tte280aopJBEqgnA/2S34ZrYoooAKKKKAP/2Q==",
+		isLogin: false,
 		myself: {
 			id: 333,
-			name: 222,
-			head: 'http://img1.qq.com/www/pics/6743/6743671.jpg'
+			nickname: '用户',
+			head: ''
 		},
 		list: [{
 			id: 111,
-			name: 111,
-			head: 'http://img1.qq.com/www/pics/6743/6743671.jpg'
+			nickname: '用户',
+			head: ''
 		}, {
 			id: 222,
-			name: 222,
-			head: 'http://img1.qq.com/www/pics/6743/6743671.jpg'
+			nickname: '用户',
+			head: ''
+		}, {
+			id: 333,
+			nickname: '用户',
+			head: ''
+		}, {
+			id: 333,
+			nickname: '用户',
+			head: ''
+		}, {
+			id: 333,
+			nickname: '用户',
+			head: ''
+		}, {
+			id: 333,
+			nickname: '用户',
+			head: ''
+		}, {
+			id: 333,
+			nickname: '用户',
+			head: ''
 		}]
 	},
 	message: {
@@ -21595,7 +21737,7 @@ exports.default = Object.freeze({
 	}
 });
 
-},{}],205:[function(require,module,exports){
+},{}],209:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21631,7 +21773,7 @@ window.getState = store.getState;
 	_react2.default.createElement(_App2.default, null)
 ), document.querySelector('#container'));
 
-},{"./App":194,"./config/INITSTATE":204,"./reducers":206,"react":180,"react-dom":30,"react-redux":33,"redux":186}],206:[function(require,module,exports){
+},{"./App":194,"./config/INITSTATE":208,"./reducers":210,"react":180,"react-dom":30,"react-redux":33,"redux":186}],210:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21660,7 +21802,7 @@ exports.default = (0, _redux.combineReducers)({
 	send: _sendReducer2.default
 });
 
-},{"./messageReducer":207,"./sendReducer":208,"./userReducer":209,"redux":186}],207:[function(require,module,exports){
+},{"./messageReducer":211,"./sendReducer":212,"./userReducer":213,"redux":186}],211:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21683,7 +21825,7 @@ var _ACTIONTYPE2 = _interopRequireDefault(_ACTIONTYPE);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"../config/ACTIONTYPE":203}],208:[function(require,module,exports){
+},{"../config/ACTIONTYPE":207}],212:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21706,7 +21848,7 @@ var _ACTIONTYPE2 = _interopRequireDefault(_ACTIONTYPE);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"../config/ACTIONTYPE":203}],209:[function(require,module,exports){
+},{"../config/ACTIONTYPE":207}],213:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21717,7 +21859,24 @@ exports.default = function () {
 	var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	var action = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-	switch (action.TYPE) {
+	switch (action.type) {
+
+		case _ACTIONTYPE2.default.USER_JOIN:
+			var myself = void 0,
+			    userlist = void 0,
+			    obj = void 0;
+			if (action.isMyself) {
+				var user = action.user;
+				myself = user.myself;
+				userlist = user.users;
+				obj = { myself: myself, isLogin: true, list: userlist };
+			} else {
+				userlist = Array.from(state.list);
+				userlist.push(action.user);
+				obj = { list: userlist };
+			}
+			return Object.assign({}, state, obj);
+
 		default:
 			return state;
 	}
@@ -21729,4 +21888,4 @@ var _ACTIONTYPE2 = _interopRequireDefault(_ACTIONTYPE);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"../config/ACTIONTYPE":203}]},{},[205]);
+},{"../config/ACTIONTYPE":207}]},{},[209]);
