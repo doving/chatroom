@@ -289,7 +289,7 @@ li{
     background: #3D8B05;
 }
 #container .time{
-    color: #111;
+    color: #999;
     font-weight: normal;
 }
 .message-title{
@@ -307,109 +307,109 @@ li{
     height: calc(~'70% - 60px');
     height: -webkit-calc(~'70% - 50px');
     width: 100%;
-}
-.users .user-all{
-    height: 30px;
-    line-height: 20px;
-    padding: 5px;
-    border-bottom: 1px solid #24272C;
-}
-.message .chatbox{
-    height: 100%;
-    padding: 10px;
-    overflow: auto;
-}
-.message .chatbox .chatitem{
-    padding: 0 0 5px 0;
-}
-.message .chatbox .chatitem .username{
-    color: orange;
-    font-weight: bold;
-    line-height: 30px;
-    width: 100%;
-}
-.message .chatbox .chatitem.myself .username{
-    text-align: right;
-}
-.message .chatbox .chatitem.myself .username,
-.message .chatbox .chatitem.myself .msg
-{
-    float: right;
-}
-.message .chatitem .msg{
-    position: relative;
-    line-height: 22px;
-    margin-top: 5px;
-    left: 20px;
-    max-width: 80%;
-    background: #fff;
-    border-radius: 5px;
-    padding: 5px 10px;
-    display: inline-block;
-    word-break: break-all;
-    white-space: pre-wrap;
-    z-index: 1;
-}
-.message .chatitem .msg img{
-    max-width: 100%;
-}
-.message .chatbox .chatitem.myself .msg{
-    background: #94E500;
-    left: -20px;
-}
-.message .chatbox .chatitem.myself::after{
-    content: '';
-    height: 0;
-    display: block;
-    clear: both;
-}
-
-.message .chatitem .msg img{
-    vertical-align: middle;
-}
-.message .chatitem .msg::after{
-    position: absolute;
-    content: '';
-    top: 6px;
-    height: 10px;
-    width: 10px;
-    z-index: -1;
-}
-.message .chatitem.others .msg::after{
-    left: 0px;
-    background: #fff;
-    transform: translate(6px, -11px) rotateX(-186deg) rotateZ(-73deg) skewX(233deg);
-    -webkit-transform: translate(6px, -11px) rotateX(-186deg) rotateZ(-73deg) skewX(233deg);
-}
-.message .chatitem.myself .msg::after{
-    right: 0px;
-    background: #94E500;
-    transform: translate(-8px, -11px) rotateZ(-76deg) skewX(50deg);
-    -webkit-transform: translate(-8px, -11px) rotateZ(-76deg) skewX(50deg);
-}
-.message .chatitem.msgitem{
-    text-align: center;
-}
-.message .chatitem.msgitem .msgcontent{
-    display: inline-block;
-    position: relative;
-    max-width: 80%;
-    text-align: center;
-    border-radius: 3px;
-    padding: 0 10px;
-    font-size: 12px;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-}
-.message .chatitem.msgitem.userjoin .msgcontent{
-    background: #55C227;
-}
-.message .chatitem.msgitem.userout .msgcontent{
-    background: #ccc;
-}
-.message .chatitem.msgitem.warning .msgcontent{
-    background: #FF7B7B;
+    .chatbox{
+        height: 100%;
+        padding: 10px;
+        overflow: auto;
+        .chatitem{
+            position: relative;
+            padding: 0 0 10px 0;
+            .username{
+                color: orange;
+                font-weight: bold;
+                line-height: 30px;
+                width: 100%;
+            }
+            .head{
+                position: absolute;
+                height: 40px;
+                width: 40px;
+                top: 30px;
+            }
+            .msg{
+                position: relative;
+                line-height: 22px;
+                margin-top: 5px;
+                left: 50px;
+                max-width: 80%;
+                background: #fff;
+                border-radius: 5px;
+                padding: 5px 10px;
+                display: inline-block;
+                word-break: break-all;
+                white-space: pre-wrap;
+                z-index: 1;
+                &::after{
+                    position: absolute;
+                    content: '';
+                    top: 6px;
+                    height: 10px;
+                    width: 10px;
+                    z-index: -1;
+                }
+                img{
+                    vertical-align: middle;
+                    max-width: 100%;
+                }
+            }
+            &.myself{
+                .head{
+                    right: 0;
+                }
+                .username, .msg{
+                    float: right;
+                }
+                .username{
+                    text-align: right;
+                }
+                .msg{
+                    background: #94E500;
+                    left: -50px;
+                    &::after{
+                        right: 0px;
+                        background: #94E500;
+                        transform: translate(-8px, -11px) rotateZ(-76deg) skewX(50deg);
+                        -webkit-transform: translate(-8px, -11px) rotateZ(-76deg) skewX(50deg);
+                    }
+                }
+                &::after{
+                    content: '';
+                    height: 0;
+                    display: block;
+                    clear: both;
+                }
+            }
+            &.other{
+                .msg::after{
+                    left: 0px;
+                    background: #fff;
+                    transform: translate(6px, -11px) rotateX(-186deg) rotateZ(-73deg) skewX(233deg);
+                    -webkit-transform: translate(6px, -11px) rotateX(-186deg) rotateZ(-73deg) skewX(233deg);
+                }
+            }
+            &.msgitem{
+                text-align: center;
+                .msgcontent{
+                    display: inline-block;
+                    position: relative;
+                    max-width: 80%;
+                    text-align: center;
+                    border-radius: 3px;
+                    padding: 0 10px;
+                    font-size: 12px;
+                    user-select: none;
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                }
+                &.tip{
+                    background: #ccc;
+                }
+                &.warning{
+                    background: #FF7B7B;
+                }
+            }
+        }
+    }
 }
 .users{
     position: relative;
@@ -428,6 +428,9 @@ li{
             height: 60px;
             padding: 10px 16px;
             border-bottom: 1px solid #292C33;
+            .inputing{
+                color: red;
+            }
             .head{
                 vertical-align: top;
                 margin-right: 10px;
@@ -496,7 +499,4 @@ li{
         }
 
     }
-}
-.users li .inputing{
-    color: red;
 }

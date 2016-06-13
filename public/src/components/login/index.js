@@ -38,18 +38,21 @@ export default React.createClass({
 		this.socket = socket;
 
 		socket.on('connect', ()=> {
+
 			socket.on('logined', user => dispatch(actions.userJoin(user, true)));
 
-			socket.on('userJoin', user => dispatch(actions.userJoin(user)));
+			socket.on('userJoin', user => this.props.isLogin && dispatch(actions.userJoin(user)));
 
 			socket.on('conflict', nickname => {
+				if(!this.props.isLogin)return;
+
 				this.setState({placeholder: '该用户名已被占用', conflict: true});
 				this.refs.nickname.value = '';
 			})
 
-			socket.on('chat', obj => dispatch(actions.receiveMsg(obj)));
+			socket.on('chat', obj => this.props.isLogin && dispatch(actions.receiveMsg(obj)));
 
-			socket.on('userOut', id => dispatch(actions.userOut(id)));
+			socket.on('userOut', id => this.props.isLogin && dispatch(actions.userOut(id)));
 		})
 	},
 

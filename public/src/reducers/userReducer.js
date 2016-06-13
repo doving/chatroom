@@ -22,11 +22,13 @@ export default function (state = INITSTATE.user, action = {}) {
 			return Object.assign({}, state, obj);
 
 		case TYPE.USER_OUT:
+			console.log(action);
 			let outIndex = userlist.findIndex(o => o.id == action.id);
-			let outUser = Object.assign({active: false}, userlist[outIndex]);
+			let outUser = Object.assign({}, userlist[outIndex], {active: false});
 
 			userlist[outIndex] = outUser;
-			return Object.assign({}, {list: userlist});
+			console.log(outUser, userlist);
+			return Object.assign({}, state, {list: userlist});
 
 		case TYPE.INIT_SOCKET:
 			return Object.assign({}, state, {socket: action.socket});

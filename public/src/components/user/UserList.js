@@ -6,9 +6,13 @@ export default React.createClass({
 
 		let heads = [], users = [];
 
-		const len = list.length;
+		let count = 0;
 
 		list.forEach((item, index) => {
+			if(!item.active)return;
+
+			count++;
+
 			users.push(
 				<li className='item' key={index}>
 					<img className='head' src={item.head || defaultHead}/>
@@ -23,14 +27,14 @@ export default React.createClass({
 			}
 		});
 
-		let cls = len > 4 ? 'nine' : len == 4 ? 'four' : len == 3 ? 'three' : 'two';
+		let cls = count > 4 ? 'nine' : count == 4 ? 'four' : count == 3 ? 'three' : 'two';
 		
 		return (
 			<div className='users'>
 				<ul className='userlist'>
-					<li className={'item hall' + (len > 1 ? '' : ' none')}>
+					<li className={'item hall' + (count > 1 ? '' : ' none')}>
 						<div className={'head ' + cls}>{heads}</div>
-						大厅（{len}）
+						大厅（{count}）
 					</li>
 					{users}
 				</ul>
