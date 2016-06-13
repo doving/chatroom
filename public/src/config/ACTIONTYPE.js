@@ -3,5 +3,6 @@ export default Object.freeze({
 	USER_JOIN        : 'USER_JOIN',//有新用户加入
 	RECEIVE_MSG      : 'RECEIVE_MSG',
 	USER_OUT         : 'USER_OUT',
+	CHANGE_CURRENT_ID: 'CHANGE_CURRENT_ID',
 
 });

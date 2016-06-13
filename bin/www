@@ -63,6 +63,7 @@ io.on('connection', socket => {
     if(obj.to === 'HALL'){
       io.emit('chat', msgObj);
     }else{
+      socket.emit('chat', msgObj);
       socketMap[obj.to].emit('chat', msgObj);
     }   
   });

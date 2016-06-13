@@ -3,17 +3,18 @@ import INITSTATE from '../config/INITSTATE';
 
 export default function (state = INITSTATE.message, action = {}) {
 	let msgs = Object.assign({}, state.list);
-	let news = [], msg = [];
+	let news = [], msg = [], msgObj = {};
 
 	switch(action.type) {
 		case TYPE.RECEIVE_MSG:
-			let target = action.msgObj.target;
-			let msgObj = Object.assign({}, msgs[target] || {news: [], msg: []});
+			let owner = action.msgObj[action.msgObj.target === action.myselfId ? 'id' : 'target'];
+
+			msgObj = Object.assign({}, msgs[owner] || {news: [], msg: []});
 
 			news = [...msgObj.news];
 			msg = [...msgObj.msg];
 
-			if(state.currentId === target){
+			if(state.currentId === owner){
 				msg.push(action.msgObj);
 			}else{
 				news.push(action.msgObj);
@@ -21,9 +22,21 @@ export default function (state = INITSTATE.message, action = {}) {
 			
 			Object.assign(msgObj, {news, msg});
 
-			msgs[target] = msgObj;
+			msgs[owner] = msgObj;
+
 
 			return Object.assign({}, state, {list: msgs});
+		
+		case TYPE.CHANGE_CURRENT_ID:
+			msgObj = Object.assign({}, msgs[action.id] || {news: [], msg: []});
+
+			msg = [...msgObj.msg, ...msgObj.news];
+
+			Object.assign(msgObj, {news: [], msg});
+			msgs[action.id] = msgObj;
+
+			return Object.assign({}, state, {list: msgs, currentId: action.id});
+
 		default:
 			return state;
 	}

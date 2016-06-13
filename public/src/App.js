@@ -15,7 +15,7 @@ const App =  React.createClass({
 			this.props.user.isLogin ? 
 			<div>
 				<div className='main'>
-					<User user={user}/>
+					<User user={user} message={message} dispatch={dispatch}/>
 					<Message user={user} message={message} />
 				</div>
 			</div>
@@ -27,7 +27,6 @@ const App =  React.createClass({
 	},
 
 	componentWillMount() {
-		console.log('1111111111');
 		const { dispatch } = this.props;
 
 		let socket = io();
@@ -42,9 +41,12 @@ const App =  React.createClass({
 
 			socket.on('userJoin', user => this.props.user.isLogin && dispatch(actions.userJoin(user)));
 
-			socket.on('chat', obj => this.props.user.isLogin && dispatch(actions.receiveMsg(obj)));
+			socket.on('chat', obj => this.props.user.isLogin && dispatch(actions.receiveMsg(obj, this.props.user.myself.id)));
 
-			socket.on('userOut', id => this.props.user.isLogin && dispatch(actions.userOut(id)));
+			socket.on('userOut', id => {
+				this.props.user.isLogin && dispatch(actions.userOut(id));
+				id === this.props.message.currentId && dispatch(actions.changeCurrentId('HALL'));
+			});
 		})
 	}
 });

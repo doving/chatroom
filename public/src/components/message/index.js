@@ -9,7 +9,7 @@ export default React.createClass({
 
 		return (
 			<div className='right'>
-				<Head />
+				<Head user={user} currentId={message.currentId}/>
 				<Message user={user} message={message}/>
 				<Send socket={user.socket} currentId={message.currentId} user={user}/>
 			</div>

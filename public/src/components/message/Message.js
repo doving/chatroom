@@ -44,7 +44,8 @@ export default React.createClass({
 	},
 
 	componentDidUpdate() {
-		this.refs.chatbox.lastElementChild.scrollIntoView(false);
+		let last = this.refs.chatbox.lastElementChild;
+		last && last.scrollIntoView(false);
 	},
 
 	timeformat(nums) {

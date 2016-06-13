@@ -21,5 +21,12 @@ export default {
 			type: TYPE.USER_OUT,
 			id
 		}
-	}
+	},
+
+	changeCurrentId(id) {
+		return {
+			type: TYPE.CHANGE_CURRENT_ID,
+			id
+		}
+	} 
 }
