@@ -4,6 +4,7 @@ import actions     from '../../actions';
 export default React.createClass({
 	getInitialState() {
 		return {
+			bindConflict: false,
 			head: this.props.defaultHead,
 			placeholder: '请输入昵称',
 			conflict: false
@@ -25,6 +26,17 @@ export default React.createClass({
 				</div>
 			</div>
 		);
+	},
+
+	componentDidUpdate() {
+		if(this.state.bindConflict)return;
+
+		const socket = this.props.socket;
+
+		socket && socket.on('conflict', nickname => {
+			this.setState({placeholder: '该用户名已被占用', conflict: true, bindConflict: true});
+			this.refs.nickname.value = '';
+		})
 	},
 
 	keyDownHandler(e) {

@@ -12,7 +12,7 @@ export default React.createClass({
 
 		return (
 			<div className='message'>
-				<ul className='chatbox'>
+				<ul className='chatbox' ref='chatbox'>
 					{
 						msgList.map((msg, index) => {
 							const userObj = msg.id === myself.id ? myself : user.list.find(o => o.id == msg.id);
@@ -41,6 +41,10 @@ export default React.createClass({
 				</ul>
 			</div>
 		);
+	},
+
+	componentDidUpdate() {
+		this.refs.chatbox.lastElementChild.scrollIntoView(false);
 	},
 
 	timeformat(nums) {

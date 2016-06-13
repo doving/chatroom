@@ -26,7 +26,8 @@ const App =  React.createClass({
 		)
 	},
 
-	componentDidMount() {
+	componentWillMount() {
+		console.log('1111111111');
 		const { dispatch } = this.props;
 
 		let socket = io();
@@ -40,13 +41,6 @@ const App =  React.createClass({
 			socket.on('logined', user => dispatch(actions.userJoin(user, true)));
 
 			socket.on('userJoin', user => this.props.user.isLogin && dispatch(actions.userJoin(user)));
-
-			socket.on('conflict', nickname => {
-				if(!this.props.user.isLogin)return;
-
-				this.setState({placeholder: '该用户名已被占用', conflict: true});
-				this.refs.nickname.value = '';
-			})
 
 			socket.on('chat', obj => this.props.user.isLogin && dispatch(actions.receiveMsg(obj)));
 

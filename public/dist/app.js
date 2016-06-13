@@ -21176,9 +21176,10 @@ var App = _react2.default.createClass({
 
 		return this.props.user.isLogin ? _react2.default.createElement('div', null, _react2.default.createElement('div', { className: 'main' }, _react2.default.createElement(_user2.default, { user: user }), _react2.default.createElement(_message2.default, { user: user, message: message }))) : _react2.default.createElement('div', null, _react2.default.createElement(_Login2.default, { dispatch: dispatch, socket: user.socket, defaultHead: user.defaultHead }));
 	},
-	componentDidMount: function componentDidMount() {
+	componentWillMount: function componentWillMount() {
 		var _this = this;
 
+		console.log('1111111111');
 		var dispatch = this.props.dispatch;
 
 		var socket = io();
@@ -21195,13 +21196,6 @@ var App = _react2.default.createClass({
 
 			socket.on('userJoin', function (user) {
 				return _this.props.user.isLogin && dispatch(_actions2.default.userJoin(user));
-			});
-
-			socket.on('conflict', function (nickname) {
-				if (!_this.props.user.isLogin) return;
-
-				_this.setState({ placeholder: '该用户名已被占用', conflict: true });
-				_this.refs.nickname.value = '';
 			});
 
 			socket.on('chat', function (obj) {
@@ -21336,6 +21330,7 @@ exports.default = _react2.default.createClass({
 	displayName: 'Login',
 	getInitialState: function getInitialState() {
 		return {
+			bindConflict: false,
 			head: this.props.defaultHead,
 			placeholder: '请输入昵称',
 			conflict: false
@@ -21351,13 +21346,25 @@ exports.default = _react2.default.createClass({
 			}, title: '上传头像' })), _react2.default.createElement('div', { className: 'shade-input' }, _react2.default.createElement('input', { ref: 'nickname', className: 'inputname' + (this.state.conflict ? ' conflict' : ''),
 			maxLength: '20', placeholder: this.state.placeholder, onKeyDown: this.keyDownHandler }), _react2.default.createElement('button', { className: 'confirm', onClick: this.loginHandler }, '确定')));
 	},
+	componentDidUpdate: function componentDidUpdate() {
+		var _this2 = this;
+
+		if (this.state.bindConflict) return;
+
+		var socket = this.props.socket;
+
+		socket && socket.on('conflict', function (nickname) {
+			_this2.setState({ placeholder: '该用户名已被占用', conflict: true, bindConflict: true });
+			_this2.refs.nickname.value = '';
+		});
+	},
 	keyDownHandler: function keyDownHandler(e) {
 		if (e.keyCode === 13) {
 			this.loginHandler();
 		}
 	},
 	uploadHandler: function uploadHandler(e) {
-		var _this2 = this;
+		var _this3 = this;
 
 		var file = e.target.files[0];
 		if (!file) return;
@@ -21374,7 +21381,7 @@ exports.default = _react2.default.createClass({
 			ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, unit, unit);
 			var url = can.toDataURL('image/jpeg', 0.6);
 
-			_this2.setState({ head: url });
+			_this3.setState({ head: url });
 			URL.revokeObjectURL(img.src);
 		};
 	},
@@ -21417,7 +21424,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'Message',
@@ -21435,56 +21444,23 @@ exports.default = _react2.default.createClass({
 		var msgList = list[currentId] && list[currentId].msg;
 		msgList = msgList || [];
 
-		return _react2.default.createElement(
-			'div',
-			{ className: 'message' },
-			_react2.default.createElement(
-				'ul',
-				{ className: 'chatbox' },
-				msgList.map(function (msg, index) {
-					var userObj = msg.id === myself.id ? myself : user.list.find(function (o) {
-						return o.id == msg.id;
-					});
-					var cls = void 0,
-					    isMyself = msg.id === myself.id;
+		return _react2.default.createElement('div', { className: 'message' }, _react2.default.createElement('ul', { className: 'chatbox', ref: 'chatbox' }, msgList.map(function (msg, index) {
+			var userObj = msg.id === myself.id ? myself : user.list.find(function (o) {
+				return o.id == msg.id;
+			});
+			var cls = void 0,
+			    isMyself = msg.id === myself.id;
 
-					switch (msg.type) {
-						case 'msg':
-							var username = isMyself ? _react2.default.createElement(
-								'p',
-								{ className: 'username' },
-								_react2.default.createElement(
-									'span',
-									{ className: 'time' },
-									'(',
-									_this.timeformat(msg.time),
-									')'
-								),
-								userObj.nickname
-							) : _react2.default.createElement(
-								'p',
-								{ className: 'username' },
-								userObj.nickname,
-								_react2.default.createElement(
-									'span',
-									{ className: 'time' },
-									'(',
-									_this.timeformat(msg.time),
-									')'
-								)
-							);
-							cls = isMyself ? 'myself' : 'other';
-							return _react2.default.createElement(
-								'li',
-								{ key: index, className: 'chatitem ' + cls },
-								_react2.default.createElement('img', { className: 'head', src: userObj.head }),
-								username,
-								_react2.default.createElement('p', { className: 'msg', dangerouslySetInnerHTML: { __html: msg.content } })
-							);
-					}
-				})
-			)
-		);
+			switch (msg.type) {
+				case 'msg':
+					var username = isMyself ? _react2.default.createElement('p', { className: 'username' }, _react2.default.createElement('span', { className: 'time' }, '(', _this.timeformat(msg.time), ')'), userObj.nickname) : _react2.default.createElement('p', { className: 'username' }, userObj.nickname, _react2.default.createElement('span', { className: 'time' }, '(', _this.timeformat(msg.time), ')'));
+					cls = isMyself ? 'myself' : 'other';
+					return _react2.default.createElement('li', { key: index, className: 'chatitem ' + cls }, _react2.default.createElement('img', { className: 'head', src: userObj.head }), username, _react2.default.createElement('p', { className: 'msg', dangerouslySetInnerHTML: { __html: msg.content } }));
+			}
+		})));
+	},
+	componentDidUpdate: function componentDidUpdate() {
+		this.refs.chatbox.lastElementChild.scrollIntoView(false);
 	},
 	timeformat: function timeformat(nums) {
 		var d = new Date(nums);
