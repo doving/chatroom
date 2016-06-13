@@ -35,12 +35,12 @@ io.on('connection', socket => {
       socket.emit('conflict', user.nickname);
     }else{
       var id = socket.id;
-      var user = {id: id, nickname: user.nickname, head: user.head};
+      var user = {id: id, nickname: user.nickname, head: user.head, active: true};
       socket.emit('logined', {
         myself: user,
         users: users
       });
-
+      socketMap[id] = socket;
       users.push(user);
       socket.broadcast.emit('userJoin', user);
       
@@ -51,16 +51,23 @@ io.on('connection', socket => {
     io.emit('inputing', socket.userid);
   });
 
-  socket.on('chat', msg => {
-    io.emit('chat', {
-      nickname: socket.nickname,
-      id: socket.userid,
-      msg: msg,
-      time: new Date - 0
-    });
+  socket.on('chat', obj => {
+    var msgObj = {
+      type: 'msg',
+      content: obj.msg,
+      time: new Date - 0,
+      id: socket.id,
+      target: obj.to
+    };
+
+    if(obj.to === 'HALL'){
+      io.emit('chat', msgObj);
+    }else{
+      socketMap[obj.to].emit('chat', msgObj);
+    }   
   });
 
-  socket.on('startprivate', data => {
+  /*socket.on('startprivate', data => {
     var room = data.room;
     if(!room){
       room = socket.userid + data.id;
@@ -83,7 +90,7 @@ io.on('connection', socket => {
       time: new Date - 0,
       room: room
     }); 
-  });
+  });*/
 
   socket.on('disconnect', () => {
     var id = socket.id;
@@ -91,7 +98,7 @@ io.on('connection', socket => {
     if(index > -1){
       var nickname = users[index].nickname;
       users.splice(index, 1);
-      io.emit('userout', id, nickname, users.length);
+      io.emit('userOut', id);
       delete socketMap[id];
     }
   });

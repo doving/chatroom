@@ -3,7 +3,6 @@ import actions     from '../../actions';
 
 export default React.createClass({
 	socket: null,
-	connected: false,
 	getInitialState() {
 		return {
 			head: this.props.defaultHead,
@@ -31,23 +30,26 @@ export default React.createClass({
 
 	componentDidMount() {
 		const { dispatch } = this.props;
+
 		let socket = io();
+
+		dispatch(actions.initSocket(socket));
 
 		this.socket = socket;
 
 		socket.on('connect', ()=> {
-			socket.on('logined', user => {
-				dispatch(actions.userJoin(user, true));
-			});
+			socket.on('logined', user => dispatch(actions.userJoin(user, true)));
 
-			socket.on('userJoin', user => {
-				dispatch(actions.userJoin(user));
-			})
+			socket.on('userJoin', user => dispatch(actions.userJoin(user)));
 
 			socket.on('conflict', nickname => {
 				this.setState({placeholder: '该用户名已被占用', conflict: true});
 				this.refs.nickname.value = '';
 			})
+
+			socket.on('chat', obj => dispatch(actions.receiveMsg(obj)));
+
+			socket.on('userOut', id => dispatch(actions.userOut(id)));
 		})
 	},
 

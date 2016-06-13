@@ -21213,14 +21213,28 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = Object.freeze(Object.assign({}, _userAction2.default, _messageAction2.default, _sendAction2.default));
 
 },{"./messageAction":196,"./sendAction":197,"./userAction":198}],196:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.default = {};
 
-},{}],197:[function(require,module,exports){
+var _ACTIONTYPE = require('../config/ACTIONTYPE');
+
+var _ACTIONTYPE2 = _interopRequireDefault(_ACTIONTYPE);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+	receiveMsg: function receiveMsg(msgObj) {
+		return {
+			type: _ACTIONTYPE2.default.RECEIVE_MSG,
+			msgObj: msgObj
+		};
+	}
+};
+
+},{"../config/ACTIONTYPE":207}],197:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21242,6 +21256,14 @@ var _ACTIONTYPE2 = _interopRequireDefault(_ACTIONTYPE);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
+	initSocket: function initSocket() {
+		var socket = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
+		return {
+			type: _ACTIONTYPE2.default.INIT_SOCKET,
+			socket: socket
+		};
+	},
 	userJoin: function userJoin(user) {
 		var isMyself = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 
@@ -21249,6 +21271,12 @@ exports.default = {
 			type: _ACTIONTYPE2.default.USER_JOIN,
 			user: user,
 			isMyself: isMyself
+		};
+	},
+	userOut: function userOut(id) {
+		return {
+			type: _ACTIONTYPE2.default.USER_OUT,
+			id: id
 		};
 	}
 };
@@ -21268,15 +21296,12 @@ var _actions = require('../../actions');
 
 var _actions2 = _interopRequireDefault(_actions);
 
-function _interopRequireDefault(obj) {
-	return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _react2.default.createClass({
 	displayName: 'Login',
 
 	socket: null,
-	connected: false,
 	getInitialState: function getInitialState() {
 		return {
 			head: this.props.defaultHead,
@@ -21289,32 +21314,62 @@ exports.default = _react2.default.createClass({
 
 		var isLogin = this.props.isLogin;
 
-		return _react2.default.createElement('div', { className: isLogin ? 'none' : 'login' }, _react2.default.createElement('div', { className: 'upload' }, _react2.default.createElement('input', { className: 'none', ref: 'upload', type: 'file', accept: 'image/*;capture=camera', onChange: this.uploadHandler }), _react2.default.createElement('img', { className: 'head', src: this.state.head, onClick: function onClick(e) {
-				return _this.refs.upload.click();
-			}, title: '上传头像' })), _react2.default.createElement('div', { className: 'shade-input' }, _react2.default.createElement('input', { ref: 'nickname', className: 'inputname' + (this.state.conflict ? ' conflict' : ''),
-			maxLength: '20', placeholder: this.state.placeholder, onKeyDown: this.keyDownHandler }), _react2.default.createElement('button', { className: 'confirm', onClick: this.loginHandler }, '确定')));
+		return _react2.default.createElement(
+			'div',
+			{ className: isLogin ? 'none' : 'login' },
+			_react2.default.createElement(
+				'div',
+				{ className: 'upload' },
+				_react2.default.createElement('input', { className: 'none', ref: 'upload', type: 'file', accept: 'image/*;capture=camera', onChange: this.uploadHandler }),
+				_react2.default.createElement('img', { className: 'head', src: this.state.head, onClick: function onClick(e) {
+						return _this.refs.upload.click();
+					}, title: '上传头像' })
+			),
+			_react2.default.createElement(
+				'div',
+				{ className: 'shade-input' },
+				_react2.default.createElement('input', { ref: 'nickname', className: 'inputname' + (this.state.conflict ? ' conflict' : ''),
+					maxLength: '20', placeholder: this.state.placeholder, onKeyDown: this.keyDownHandler }),
+				_react2.default.createElement(
+					'button',
+					{ className: 'confirm', onClick: this.loginHandler },
+					'确定'
+				)
+			)
+		);
 	},
 	componentDidMount: function componentDidMount() {
 		var _this2 = this;
 
 		var dispatch = this.props.dispatch;
 
+
 		var socket = io();
+
+		dispatch(_actions2.default.initSocket(socket));
 
 		this.socket = socket;
 
 		socket.on('connect', function () {
 			socket.on('logined', function (user) {
-				dispatch(_actions2.default.userJoin(user, true));
+				return dispatch(_actions2.default.userJoin(user, true));
 			});
 
 			socket.on('userJoin', function (user) {
-				dispatch(_actions2.default.userJoin(user));
+				return dispatch(_actions2.default.userJoin(user));
 			});
 
 			socket.on('conflict', function (nickname) {
 				_this2.setState({ placeholder: '该用户名已被占用', conflict: true });
 				_this2.refs.nickname.value = '';
+			});
+
+			socket.on('chat', function (obj) {
+				return dispatch(_actions2.default.receiveMsg(obj));
+			});
+
+			socket.on('userOut', function (id) {
+				return dispatch(_actions2.default.userOut(id));
 			});
 		});
 	},
@@ -21384,7 +21439,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'Message',
@@ -21396,43 +21453,22 @@ exports.default = _react2.default.createClass({
 		var list = message.list;
 
 		var myself = user.myself;
-		var userObj = user.list.find(function (o) {
-			return o.id == currentId;
-		});
 
 		var msgList = list[currentId] && list[currentId].msg;
 		msgList = msgList || [];
 
-		return _react2.default.createElement(
-			'div',
-			{ className: 'message' },
-			_react2.default.createElement(
-				'ul',
-				{ className: 'chatbox' },
-				msgList.map(function (msg) {
-					var cls = void 0;
+		return _react2.default.createElement('div', { className: 'message' }, _react2.default.createElement('ul', { className: 'chatbox' }, msgList.map(function (msg, index) {
+			var userObj = msg.id === myself.id ? myself : user.list.find(function (o) {
+				return o.id == msg.id;
+			});
+			var cls = void 0;
 
-					switch (msg.type) {
-						case 'msg':
-							cls = msg.id === myself.id ? 'other' : 'myself';
-							return _react2.default.createElement(
-								'li',
-								{ className: 'chatitem ' + cls },
-								_react2.default.createElement(
-									'p',
-									{ className: 'username' },
-									userObj.name
-								),
-								_react2.default.createElement(
-									'p',
-									{ className: 'msg' },
-									msg.content
-								)
-							);
-					}
-				})
-			)
-		);
+			switch (msg.type) {
+				case 'msg':
+					cls = msg.id === myself.id ? 'myself' : 'other';
+					return _react2.default.createElement('li', { key: index, className: 'chatitem ' + cls }, _react2.default.createElement('p', { className: 'username' }, userObj.nickname), _react2.default.createElement('p', { className: 'msg', dangerouslySetInnerHTML: { __html: msg.content } }));
+			}
+		})));
 	}
 });
 
@@ -21449,6 +21485,8 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 exports.default = _react2.default.createClass({
 	displayName: 'Send',
 	render: function render() {
@@ -21460,12 +21498,13 @@ exports.default = _react2.default.createClass({
 				{ className: 'tools' },
 				_react2.default.createElement(
 					'form',
-					{ className: 'upload-form' },
-					_react2.default.createElement('input', { className: 'upload', type: 'file', accept: 'image/*;capture=camera' })
+					{ ref: 'uploadForm', className: 'upload-form' },
+					_react2.default.createElement('input', { className: 'upload', ref: 'upload', type: 'file',
+						accept: 'image/*;capture=camera', onChange: this.uploadHandler })
 				),
 				_react2.default.createElement(
 					'div',
-					{ className: 'tool send-img', title: '发送图片' },
+					{ className: 'tool send-img', title: '发送图片', onClick: this.clickImgHandler },
 					_react2.default.createElement('i', { className: 'icon-picture' })
 				),
 				_react2.default.createElement(
@@ -21479,13 +21518,181 @@ exports.default = _react2.default.createClass({
 					_react2.default.createElement('div', { className: 'pics-box' })
 				)
 			),
-			_react2.default.createElement('section', { className: 'input', contentEditable: 'true' }),
+			_react2.default.createElement('section', { className: 'input', ref: 'input', contentEditable: 'true',
+				onInput: this.inputHandler, onDrop: this.dropHandler,
+				onPaste: this.pasteHandler, onKeyDown: this.keydownHandler }),
 			_react2.default.createElement(
 				'button',
-				{ className: 'send' },
+				{ className: 'send', onClick: this.sendHandler },
 				'发送'
 			)
 		);
+	},
+	clickImgHandler: function clickImgHandler() {
+		this.refs.upload.click();
+	},
+	inputHandler: function inputHandler() {},
+	dropHandler: function dropHandler(e) {
+		var _this = this;
+
+		var data = e.dataTransfer;
+
+		[].concat(_toConsumableArray(data.items)).forEach(function (item) {
+			var type = item.type;
+			if (type.match(/^image\//)) {
+				_this.loadImg(item.getAsFile());
+			} else if (type === 'text/plain') {
+				item.getAsString(_this.dropInsert);
+			}
+		});
+
+		e.preventDefault();
+	},
+	pasteHandler: function pasteHandler(e) {
+		var _this2 = this;
+
+		var data = e.clipboardData;
+
+		[].concat(_toConsumableArray(data.items)).forEach(function (item) {
+			var type = item.type;
+			if (type.match(/^image\//)) {
+				_this2.loadImg(item.getAsFile(), true);
+			} else if (type === 'text/plain') {
+				item.getAsString(function (str) {
+					_this2.insertCont(str, 'text');
+				});
+			}
+		});
+
+		e.preventDefault();
+	},
+	keydownHandler: function keydownHandler(e) {
+		if (e.keyCode == 13 && !e.ctrlKey) {
+			this.sendHandler();
+			e.preventDefault();
+		}
+	},
+	uploadHandler: function uploadHandler(e) {
+		var socket = this.props.socket;
+
+
+		var img = e.target.files[0];
+
+		if (!img) return;
+
+		if (/^image\/[a-z]+$/.test(img.type)) {
+			this.loadImg(img);
+		} else {
+			showTip('请选择图片', 'warning');
+		}
+
+		this.refs.uploadForm.reset();
+	},
+	dropInsert: function dropInsert(str) {
+		var range = document.createRange();
+		var sel = window.getSelection();
+		var input = this.refs.input;
+
+		input.innerHTML += /^data:image\/[a-z]+;base64/.test(str) ? '<img class=\'pic\' src=' + str + '>' : str;
+
+		range.setStart(input, input.childNodes.length);
+		sel.removeAllRanges();
+		sel.addRange(range);
+	},
+	loadImg: function loadImg(img, isPaste) {
+		var _this3 = this;
+
+		if (img && /^image\/[a-z]+$/.test(img.type)) {
+			if (img.size <= 0) return;
+
+			var maxsize = 100;
+
+			if (img.size > 1024 * maxsize) {
+				showTip('图片不得超过' + maxsize + 'k', 'warning');
+				return;
+			}
+
+			var fr = new FileReader();
+
+			fr.onload = function (e) {
+				isPaste ? _this3.insertCont(e.target.result) : _this3.dropInsert(e.target.result);
+			};
+
+			fr.readAsDataURL(img);
+		}
+	},
+	insertCont: function insertCont(cont, type) {
+		var input = this.refs.input;
+
+		var range = document.createRange();
+
+		var selection = window.getSelection();
+
+		var target = selection.anchorNode;
+		//console.log(cont, target);
+		if (!target || target !== input && target.parentNode !== input) return;
+
+		var start = selection.anchorOffset;
+		var end = selection.focusOffset;
+
+		var delta = 0;
+		var cursor = 0;
+
+		//cont = cont.replace(/(\r|\n|\r\n){1,2}/g, '<br/>');
+		var imgEl = document.createElement('img');
+		imgEl.className = 'pic';
+		type !== 'text' && imgEl.setAttribute('src', cont);
+
+		if (target === input) {
+			var node = type === 'text' ? document.createTextNode(cont) : imgEl;
+			//console.log(target.childNodes[start]);
+			target.insertBefore(node, target.childNodes[start]);
+			cursor = start + 1;
+		} else {
+			if (type === 'text') {
+				var content = target.textContent;
+				target.textContent = content.slice(0, start + delta) + cont + content.slice(end + delta);
+				cursor = start + cont.length;
+			} else {
+				var text1 = document.createTextNode(target.textContent.slice(0, start));
+				var text2 = document.createTextNode(target.textContent.slice(end));
+				var frag = document.createDocumentFragment();
+
+				frag.appendChild(text1);
+				frag.appendChild(imgEl);
+				frag.appendChild(text2);
+
+				target.parentNode.replaceChild(frag, target);
+
+				cursor = [].concat(_toConsumableArray(input.childNodes)).findIndex(function (item) {
+					return item === imgEl;
+				}) + 1;
+				target = input;
+			}
+		}
+
+		range.setStart(target, cursor);
+		selection.removeAllRanges();
+		selection.addRange(range);
+	},
+	sendHandler: function sendHandler() {
+		var _props = this.props;
+		var socket = _props.socket;
+		var currentId = _props.currentId;
+
+
+		var input = this.refs.input;
+		var msg = input.innerHTML.trim();
+
+		if (msg) {
+			//util.compress(msg, function(str){
+			socket.emit('chat', {
+				to: currentId,
+				msg: msg
+			});
+			input.innerHTML = '';
+			//});
+		}
 	}
 });
 
@@ -21527,7 +21734,7 @@ exports.default = _react2.default.createClass({
 			{ className: 'right' },
 			_react2.default.createElement(_Head2.default, null),
 			_react2.default.createElement(_Message2.default, { user: user, message: message }),
-			_react2.default.createElement(_Send2.default, null)
+			_react2.default.createElement(_Send2.default, { socket: user.socket, currentId: message.currentId, user: user })
 		);
 	}
 });
@@ -21583,9 +21790,7 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-function _interopRequireDefault(obj) {
-	return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _react2.default.createClass({
 	displayName: 'UserList',
@@ -21594,13 +21799,19 @@ exports.default = _react2.default.createClass({
 		var list = _props.list;
 		var defaultHead = _props.defaultHead;
 
+
 		var heads = [],
 		    users = [];
 
 		var len = list.length;
 
 		list.forEach(function (item, index) {
-			users.push(_react2.default.createElement('li', { className: 'item', key: index }, _react2.default.createElement('img', { className: 'head', src: item.head || defaultHead }), item.nickname));
+			users.push(_react2.default.createElement(
+				'li',
+				{ className: 'item', key: index },
+				_react2.default.createElement('img', { className: 'head', src: item.head || defaultHead }),
+				item.nickname
+			));
 
 			if (index < 9) {
 				heads.push(_react2.default.createElement('img', { key: index, className: 'hall-head', src: item.head || defaultHead }));
@@ -21609,7 +21820,27 @@ exports.default = _react2.default.createClass({
 
 		var cls = len > 4 ? 'nine' : len == 4 ? 'four' : len == 3 ? 'three' : 'two';
 
-		return _react2.default.createElement('div', { className: 'users' }, _react2.default.createElement('ul', { className: 'userlist' }, _react2.default.createElement('li', { className: 'item hall' + (len > 1 ? '' : ' none') }, _react2.default.createElement('div', { className: 'head ' + cls }, heads), '大厅（', len, '）'), users));
+		return _react2.default.createElement(
+			'div',
+			{ className: 'users' },
+			_react2.default.createElement(
+				'ul',
+				{ className: 'userlist' },
+				_react2.default.createElement(
+					'li',
+					{ className: 'item hall' + (len > 1 ? '' : ' none') },
+					_react2.default.createElement(
+						'div',
+						{ className: 'head ' + cls },
+						heads
+					),
+					'大厅（',
+					len,
+					'）'
+				),
+				users
+			)
+		);
 	}
 });
 
@@ -21659,76 +21890,60 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 exports.default = Object.freeze({
-	USER_JOIN: 'USER_JOIN' });
+	INIT_SOCKET: 'INIT_SOCKET', //创建socket连接
+	USER_JOIN: 'USER_JOIN', //有新用户加入
+	RECEIVE_MSG: 'RECEIVE_MSG',
+	USER_OUT: 'USER_OUT'
+
+});
 
 },{}],208:[function(require,module,exports){
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 exports.default = Object.freeze({
 	user: {
+		socket: null,
 		defaultHead: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAoACgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD0TUbv7DZPOE8xwQkaZxvdiFVc9ssQM9s5qhbaDG8BOqyyXdw7mR/30nlqSc4RSx2gdBTfFHmtHpkMIyZNSt9w/wBlW3n/ANAq7LbX76vBcx6iI7JExJaeSD5h+bnfnI6rx/s+5oAgOjCAbtNvbq2lB48yZ54yP7pRyQB/u7T6EU+11Flu00/UVWK9ZSYyufLnA6lM9Dzyp5HuPmNiaxgmv4Lx/M823DBMSELg9cjoaTUbGO/tvKY7JEIeGUDLRSD7rD3Hp0IyDwTQBboqppV095pltcTKqTOg81F6JIOGX8GBH4UUARa3J9nsPtmxW+yyJMxYZ2IGHmMPcIXNXtw2bl+YYyMd6U1hwxXugqYoo5L7TAxKInM1svXaB/y0QdgPmAwAGoAs/wBqXv8A0L+pf9/Lf/47V+2leaBZJLeS3Zs5jkKll577SR+RrOk8R6VCqtczy26s20NcW8kSk+mWUDPB49qJNaSYKmkwSX0smNropWED+80hG3A7gZb0BoAXw7n+z5/+v67x/wCBElFWtLs/sGnxWxkMrrlpJCMeY7EszY7ZYk47ZooAt0UUUAY/ie1Nxp9vIlu88tte280aopJBEqgnA/2S34ZrYoooAKKKKAP/2Q==",
 		isLogin: false,
 		myself: {
-			id: 333,
-			nickname: '用户',
-			head: ''
+			/*id: 333,
+   nickname: '我自己',
+   head: '',
+   active: true*/
 		},
-		list: [{
-			id: 111,
-			nickname: '用户',
-			head: ''
-		}, {
-			id: 222,
-			nickname: '用户',
-			head: ''
-		}, {
-			id: 333,
-			nickname: '用户',
-			head: ''
-		}, {
-			id: 333,
-			nickname: '用户',
-			head: ''
-		}, {
-			id: 333,
-			nickname: '用户',
-			head: ''
-		}, {
-			id: 333,
-			nickname: '用户',
-			head: ''
-		}, {
-			id: 333,
-			nickname: '用户',
-			head: ''
-		}]
+		list: [
+			/*{
+   	id: 111,
+   	nickname: '用户1',
+   	head: '',
+   	active: true
+   },*/
+		]
 	},
 	message: {
-		currentId: 111,
+		currentId: 'HALL',
 		list: {
-			111: {
-				news: [//新消息列表
-				{
-					type: 'msg|warn|tip',
-					content: 'xxx',
-					time: ''
-				}],
-				msg: [//消息列表
-				{
-					type: 'msg|warn|tip',
-					content: 'xxx',
-					time: '',
-					id: 111
-				}, {
-					type: 'msg|warn|tip',
-					content: 'xxx',
-					time: '',
-					id: 333
-				}]
-			}
+			/*'HALL': {
+   	news: [ //新消息列表
+   		{
+   			type: 'msg',
+   			content: 'xxx',
+   			time: ''
+   		}
+   	],
+   	msg: [ //消息列表
+   		{
+   			type: 'msg',
+   			content: 'xxx',
+   			time: '',
+   			id: 111,
+   			target: 'HALL'
+   		},
+   	]
+   }*/
 		}
 	},
 	send: {
@@ -21810,10 +22025,32 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function () {
-	var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	var state = arguments.length <= 0 || arguments[0] === undefined ? _INITSTATE2.default.message : arguments[0];
 	var action = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-	switch (action.TYPE) {
+	var msgs = Object.assign({}, state.list);
+	var news = [],
+	    msg = [];
+
+	switch (action.type) {
+		case _ACTIONTYPE2.default.RECEIVE_MSG:
+			var target = action.msgObj.target;
+			var msgObj = Object.assign({}, msgs[target] || { news: [], msg: [] });
+
+			news = [].concat(_toConsumableArray(msgObj.news));
+			msg = [].concat(_toConsumableArray(msgObj.msg));
+
+			if (state.currentId === target) {
+				msg.push(action.msgObj);
+			} else {
+				news.push(action.msgObj);
+			}
+
+			Object.assign(msgObj, { news: news, msg: msg });
+
+			msgs[target] = msgObj;
+
+			return Object.assign({}, state, { list: msgs });
 		default:
 			return state;
 	}
@@ -21823,9 +22060,15 @@ var _ACTIONTYPE = require('../config/ACTIONTYPE');
 
 var _ACTIONTYPE2 = _interopRequireDefault(_ACTIONTYPE);
 
+var _INITSTATE = require('../config/INITSTATE');
+
+var _INITSTATE2 = _interopRequireDefault(_INITSTATE);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"../config/ACTIONTYPE":207}],212:[function(require,module,exports){
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+},{"../config/ACTIONTYPE":207,"../config/INITSTATE":208}],212:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21856,27 +22099,40 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function () {
-	var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	var state = arguments.length <= 0 || arguments[0] === undefined ? _INITSTATE2.default.user : arguments[0];
 	var action = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	var userlist = [].concat(_toConsumableArray(state.list));
 
 	switch (action.type) {
 
 		case _ACTIONTYPE2.default.USER_JOIN:
 			var myself = void 0,
-			    userlist = void 0,
 			    obj = void 0;
+
 			if (action.isMyself) {
 				var user = action.user;
+
 				myself = user.myself;
 				userlist = user.users;
 				obj = { myself: myself, isLogin: true, list: userlist };
 			} else {
-				userlist = Array.from(state.list);
 				userlist.push(action.user);
 				obj = { list: userlist };
 			}
 			return Object.assign({}, state, obj);
 
+		case _ACTIONTYPE2.default.USER_OUT:
+			var outIndex = userlist.findIndex(function (o) {
+				return o.id == action.id;
+			});
+			var outUser = Object.assign({ active: false }, userlist[outIndex]);
+
+			userlist[outIndex] = outUser;
+			return Object.assign({}, { list: userlist });
+
+		case _ACTIONTYPE2.default.INIT_SOCKET:
+			return Object.assign({}, state, { socket: action.socket });
 		default:
 			return state;
 	}
@@ -21886,6 +22142,12 @@ var _ACTIONTYPE = require('../config/ACTIONTYPE');
 
 var _ACTIONTYPE2 = _interopRequireDefault(_ACTIONTYPE);
 
+var _INITSTATE = require('../config/INITSTATE');
+
+var _INITSTATE2 = _interopRequireDefault(_INITSTATE);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"../config/ACTIONTYPE":207}]},{},[209]);
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+},{"../config/ACTIONTYPE":207,"../config/INITSTATE":208}]},{},[209]);
