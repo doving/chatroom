@@ -21157,7 +21157,13 @@ var _Login = require('./components/Login');
 
 var _Login2 = _interopRequireDefault(_Login);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _actions = require('./actions');
+
+var _actions2 = _interopRequireDefault(_actions);
+
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 var App = _react2.default.createClass({
 	displayName: 'App',
@@ -21168,18 +21174,44 @@ var App = _react2.default.createClass({
 		var send = _props.send;
 		var dispatch = _props.dispatch;
 
+		return this.props.user.isLogin ? _react2.default.createElement('div', null, _react2.default.createElement('div', { className: 'main' }, _react2.default.createElement(_user2.default, { user: user }), _react2.default.createElement(_message2.default, { user: user, message: message }))) : _react2.default.createElement('div', null, _react2.default.createElement(_Login2.default, { dispatch: dispatch, socket: user.socket, defaultHead: user.defaultHead }));
+	},
+	componentDidMount: function componentDidMount() {
+		var _this = this;
 
-		return _react2.default.createElement(
-			'div',
-			null,
-			_react2.default.createElement(_Login2.default, { dispatch: dispatch, isLogin: user.isLogin, defaultHead: user.defaultHead }),
-			_react2.default.createElement(
-				'div',
-				{ className: 'main' },
-				_react2.default.createElement(_user2.default, { user: user }),
-				_react2.default.createElement(_message2.default, { user: user, message: message })
-			)
-		);
+		var dispatch = this.props.dispatch;
+
+		var socket = io();
+
+		dispatch(_actions2.default.initSocket(socket));
+
+		this.socket = socket;
+
+		socket.on('connect', function () {
+
+			socket.on('logined', function (user) {
+				return dispatch(_actions2.default.userJoin(user, true));
+			});
+
+			socket.on('userJoin', function (user) {
+				return _this.props.user.isLogin && dispatch(_actions2.default.userJoin(user));
+			});
+
+			socket.on('conflict', function (nickname) {
+				if (!_this.props.user.isLogin) return;
+
+				_this.setState({ placeholder: '该用户名已被占用', conflict: true });
+				_this.refs.nickname.value = '';
+			});
+
+			socket.on('chat', function (obj) {
+				return _this.props.user.isLogin && dispatch(_actions2.default.receiveMsg(obj));
+			});
+
+			socket.on('userOut', function (id) {
+				return _this.props.user.isLogin && dispatch(_actions2.default.userOut(id));
+			});
+		});
 	}
 });
 
@@ -21189,7 +21221,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(App);
 
-},{"./components/Login":199,"./components/message":203,"./components/user":206,"react":180,"react-redux":33}],195:[function(require,module,exports){
+},{"./actions":195,"./components/Login":199,"./components/message":203,"./components/user":206,"react":180,"react-redux":33}],195:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21302,8 +21334,6 @@ function _interopRequireDefault(obj) {
 
 exports.default = _react2.default.createClass({
 	displayName: 'Login',
-
-	socket: null,
 	getInitialState: function getInitialState() {
 		return {
 			head: this.props.defaultHead,
@@ -21321,50 +21351,13 @@ exports.default = _react2.default.createClass({
 			}, title: '上传头像' })), _react2.default.createElement('div', { className: 'shade-input' }, _react2.default.createElement('input', { ref: 'nickname', className: 'inputname' + (this.state.conflict ? ' conflict' : ''),
 			maxLength: '20', placeholder: this.state.placeholder, onKeyDown: this.keyDownHandler }), _react2.default.createElement('button', { className: 'confirm', onClick: this.loginHandler }, '确定')));
 	},
-	componentDidMount: function componentDidMount() {
-		var _this2 = this;
-
-		var dispatch = this.props.dispatch;
-
-		var socket = io();
-
-		dispatch(_actions2.default.initSocket(socket));
-
-		this.socket = socket;
-
-		socket.on('connect', function () {
-
-			socket.on('logined', function (user) {
-				return dispatch(_actions2.default.userJoin(user, true));
-			});
-
-			socket.on('userJoin', function (user) {
-				return _this2.props.isLogin && dispatch(_actions2.default.userJoin(user));
-			});
-
-			socket.on('conflict', function (nickname) {
-				if (!_this2.props.isLogin) return;
-
-				_this2.setState({ placeholder: '该用户名已被占用', conflict: true });
-				_this2.refs.nickname.value = '';
-			});
-
-			socket.on('chat', function (obj) {
-				return _this2.props.isLogin && dispatch(_actions2.default.receiveMsg(obj));
-			});
-
-			socket.on('userOut', function (id) {
-				return _this2.props.isLogin && dispatch(_actions2.default.userOut(id));
-			});
-		});
-	},
 	keyDownHandler: function keyDownHandler(e) {
 		if (e.keyCode === 13) {
 			this.loginHandler();
 		}
 	},
 	uploadHandler: function uploadHandler(e) {
-		var _this3 = this;
+		var _this2 = this;
 
 		var file = e.target.files[0];
 		if (!file) return;
@@ -21381,7 +21374,7 @@ exports.default = _react2.default.createClass({
 			ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, unit, unit);
 			var url = can.toDataURL('image/jpeg', 0.6);
 
-			_this3.setState({ head: url });
+			_this2.setState({ head: url });
 			URL.revokeObjectURL(img.src);
 		};
 	},
@@ -21389,7 +21382,7 @@ exports.default = _react2.default.createClass({
 		var nickname = this.refs.nickname.value.trim();
 		var head = this.state.head;
 
-		nickname ? this.socket.emit('login', { nickname: nickname, head: head }) : this.refs.nickname.focus();
+		nickname ? this.props.socket.emit('login', { nickname: nickname, head: head }) : this.refs.nickname.focus();
 	}
 });
 
@@ -21424,9 +21417,7 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-function _interopRequireDefault(obj) {
-	return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _react2.default.createClass({
 	displayName: 'Message',
@@ -21444,20 +21435,56 @@ exports.default = _react2.default.createClass({
 		var msgList = list[currentId] && list[currentId].msg;
 		msgList = msgList || [];
 
-		return _react2.default.createElement('div', { className: 'message' }, _react2.default.createElement('ul', { className: 'chatbox' }, msgList.map(function (msg, index) {
-			var userObj = msg.id === myself.id ? myself : user.list.find(function (o) {
-				return o.id == msg.id;
-			});
-			var cls = void 0,
-			    isMyself = msg.id === myself.id;
+		return _react2.default.createElement(
+			'div',
+			{ className: 'message' },
+			_react2.default.createElement(
+				'ul',
+				{ className: 'chatbox' },
+				msgList.map(function (msg, index) {
+					var userObj = msg.id === myself.id ? myself : user.list.find(function (o) {
+						return o.id == msg.id;
+					});
+					var cls = void 0,
+					    isMyself = msg.id === myself.id;
 
-			switch (msg.type) {
-				case 'msg':
-					var username = isMyself ? _react2.default.createElement('p', { className: 'username' }, _react2.default.createElement('span', { className: 'time' }, '(', _this.timeformat(msg.time), ')'), userObj.nickname) : _react2.default.createElement('p', { className: 'username' }, userObj.nickname, _react2.default.createElement('span', { className: 'time' }, '(', _this.timeformat(msg.time), ')'));
-					cls = isMyself ? 'myself' : 'other';
-					return _react2.default.createElement('li', { key: index, className: 'chatitem ' + cls }, _react2.default.createElement('img', { className: 'head', src: userObj.head }), username, _react2.default.createElement('p', { className: 'msg', dangerouslySetInnerHTML: { __html: msg.content } }));
-			}
-		})));
+					switch (msg.type) {
+						case 'msg':
+							var username = isMyself ? _react2.default.createElement(
+								'p',
+								{ className: 'username' },
+								_react2.default.createElement(
+									'span',
+									{ className: 'time' },
+									'(',
+									_this.timeformat(msg.time),
+									')'
+								),
+								userObj.nickname
+							) : _react2.default.createElement(
+								'p',
+								{ className: 'username' },
+								userObj.nickname,
+								_react2.default.createElement(
+									'span',
+									{ className: 'time' },
+									'(',
+									_this.timeformat(msg.time),
+									')'
+								)
+							);
+							cls = isMyself ? 'myself' : 'other';
+							return _react2.default.createElement(
+								'li',
+								{ key: index, className: 'chatitem ' + cls },
+								_react2.default.createElement('img', { className: 'head', src: userObj.head }),
+								username,
+								_react2.default.createElement('p', { className: 'msg', dangerouslySetInnerHTML: { __html: msg.content } })
+							);
+					}
+				})
+			)
+		);
 	},
 	timeformat: function timeformat(nums) {
 		var d = new Date(nums);
@@ -21801,30 +21828,35 @@ function _interopRequireDefault(obj) {
 exports.default = _react2.default.createClass({
 	displayName: 'UserList',
 	render: function render() {
-		var _props = this.props;
-		var list = _props.list;
-		var defaultHead = _props.defaultHead;
+		var _props$user = this.props.user;
+		var myself = _props$user.myself;
+		var list = _props$user.list;
+		var defaultHead = _props$user.defaultHead;
+		var currentId = _props$user.currentId;
 
-		var heads = [],
-		    users = [];
+		var heads = [_react2.default.createElement('img', { key: '0', className: 'hall-head', src: myself.head })];
+		var users = [];
 
-		var count = 0;
+		var count = 1;
 
 		list.forEach(function (item, index) {
 			if (!item.active) return;
 
-			count++;
+			var cls = item.id === currentId ? 'item active' : 'item';
 
-			users.push(_react2.default.createElement('li', { className: 'item', key: index }, _react2.default.createElement('img', { className: 'head', src: item.head || defaultHead }), item.nickname));
+			users.push(_react2.default.createElement('li', { className: cls, key: index }, _react2.default.createElement('img', { className: 'head', src: item.head || defaultHead }), item.nickname));
 
-			if (index < 9) {
-				heads.push(_react2.default.createElement('img', { key: index, className: 'hall-head', src: item.head || defaultHead }));
+			if (count < 9) {
+				heads.push(_react2.default.createElement('img', { key: count, className: 'hall-head', src: item.head || defaultHead }));
 			}
+			count++;
 		});
 
-		var cls = count > 4 ? 'nine' : count == 4 ? 'four' : count == 3 ? 'three' : 'two';
+		var headClass = count > 4 ? 'nine' : count == 4 ? 'four' : count == 3 ? 'three' : 'two';
 
-		return _react2.default.createElement('div', { className: 'users' }, _react2.default.createElement('ul', { className: 'userlist' }, _react2.default.createElement('li', { className: 'item hall' + (count > 1 ? '' : ' none') }, _react2.default.createElement('div', { className: 'head ' + cls }, heads), '大厅（', count, '）'), users));
+		var hallClass = currentId === 'HALL' ? 'item hall active' : 'item hall';
+
+		return _react2.default.createElement('div', { className: 'users' }, _react2.default.createElement('ul', { className: 'userlist' }, _react2.default.createElement('li', { className: hallClass }, _react2.default.createElement('div', { className: 'head ' + headClass }, heads), '大厅（', count, '）'), users));
 	}
 });
 
@@ -21852,17 +21884,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = _react2.default.createClass({
 	displayName: 'user',
 	render: function render() {
-		var _props$user = this.props.user;
-		var myself = _props$user.myself;
-		var list = _props$user.list;
-		var defaultHead = _props$user.defaultHead;
+		var user = this.props.user;
+		var myself = user.myself;
+		var list = user.list;
+		var defaultHead = user.defaultHead;
+		var currentId = user.currentId;
 
 
 		return _react2.default.createElement(
 			'div',
 			{ className: 'left' },
 			_react2.default.createElement(_MyselfInfo2.default, { myself: myself, defaultHead: defaultHead }),
-			_react2.default.createElement(_UserList2.default, { list: list, defaultHead: defaultHead })
+			_react2.default.createElement(_UserList2.default, { user: user })
 		);
 	}
 });
@@ -22132,18 +22165,8 @@ var _INITSTATE = require('../config/INITSTATE');
 
 var _INITSTATE2 = _interopRequireDefault(_INITSTATE);
 
-function _interopRequireDefault(obj) {
-	return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) {
-	if (Array.isArray(arr)) {
-		for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
-			arr2[i] = arr[i];
-		}return arr2;
-	} else {
-		return Array.from(arr);
-	}
-}
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 },{"../config/ACTIONTYPE":207,"../config/INITSTATE":208}]},{},[209]);

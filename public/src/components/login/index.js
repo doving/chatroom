@@ -2,7 +2,6 @@ import React       from 'react';
 import actions     from '../../actions';
 
 export default React.createClass({
-	socket: null,
 	getInitialState() {
 		return {
 			head: this.props.defaultHead,
@@ -26,34 +25,6 @@ export default React.createClass({
 				</div>
 			</div>
 		);
-	},
-
-	componentDidMount() {
-		const { dispatch } = this.props;
-
-		let socket = io();
-
-		dispatch(actions.initSocket(socket));
-
-		this.socket = socket;
-
-		socket.on('connect', ()=> {
-
-			socket.on('logined', user => dispatch(actions.userJoin(user, true)));
-
-			socket.on('userJoin', user => this.props.isLogin && dispatch(actions.userJoin(user)));
-
-			socket.on('conflict', nickname => {
-				if(!this.props.isLogin)return;
-
-				this.setState({placeholder: '该用户名已被占用', conflict: true});
-				this.refs.nickname.value = '';
-			})
-
-			socket.on('chat', obj => this.props.isLogin && dispatch(actions.receiveMsg(obj)));
-
-			socket.on('userOut', id => this.props.isLogin && dispatch(actions.userOut(id)));
-		})
 	},
 
 	keyDownHandler(e) {
@@ -88,6 +59,6 @@ export default React.createClass({
 		let nickname = this.refs.nickname.value.trim();
 		let head = this.state.head;
 
-		nickname ? this.socket.emit('login', {nickname, head}) : this.refs.nickname.focus();
+		nickname ? this.props.socket.emit('login', {nickname, head}) : this.refs.nickname.focus();
 	}
 });

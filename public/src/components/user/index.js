@@ -4,12 +4,13 @@ import UserList    from './UserList';
 
 export default React.createClass({
 	render() {
-		const { myself, list, defaultHead } = this.props.user;
+		const { user } = this.props; 
+		const { myself, list, defaultHead, currentId } = user;
 
 		return (
 			<div className='left'>
 				<MyselfInfo myself={myself} defaultHead={defaultHead}/>
-				<UserList list={list} defaultHead={defaultHead}/>
+				<UserList user={user}/>
 			</div>
 		);
 	}
