@@ -45,7 +45,7 @@ export default React.createClass({
 
 	componentDidMount() {
 		document.addEventListener('click', e => {
-			const { pageX: x, pageY: y } = e;
+			const { clientX: x, clientY: y } = e;
 
 			const heartO = this.refs.heart.getBoundingClientRect();
 			const heartBoxO = this.refs.heartBox.getBoundingClientRect();

@@ -5,5 +5,6 @@ export default Object.freeze({
 	USER_OUT         : 'USER_OUT',
 	CHANGE_CURRENT_ID: 'CHANGE_CURRENT_ID',
 	CHANGE_FAVOR     : 'CHANGE_FAVOR',
+	CLEAR_SCREEN     : 'CLEAR_SCREEN',
 
 });

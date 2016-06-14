@@ -8,4 +8,10 @@ export default {
 			myselfId
 		}
 	},
+
+	clearScreen() {
+		return {
+			type: TYPE.CLEAR_SCREEN
+		}
+	}
 }

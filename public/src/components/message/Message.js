@@ -1,4 +1,5 @@
-import React from 'react';
+import React     from 'react';
+import actions   from '../../actions';
 
 export default React.createClass({
 	render() {
@@ -11,7 +12,8 @@ export default React.createClass({
 		msgList = msgList || [];
 
 		return (
-			<div className='message'>
+			<div ref='message' className='message' onContextMenu={this.contextMenu}>
+				<p ref='clear' className='clear none' onClick={this.clearHandler}>清屏</p>
 				<ul className='chatbox' ref='chatbox'>
 					{
 						msgList.map((msg, index) => {
@@ -41,6 +43,38 @@ export default React.createClass({
 				</ul>
 			</div>
 		);
+	},
+
+	componentDidMount() {
+		document.addEventListener('click', e => {
+			//const clear = this.refs.clear;
+
+			//if(isOutSide(e.clientX, e.clientY, clear.getBoundingClientRect())){
+				this.refs.clear.classList.add('none');
+			//}
+		});
+	},
+
+	contextMenu(e) {
+		const{ message, clear } = this.refs;
+		const { top, left } = message.getBoundingClientRect();
+		const { clientX: x, clientY: y } = e;
+		console.log(top, left, x, y);
+		if(/ul|li/i.test(e.target.tagName)){
+			Object.assign(this.refs.clear.style, {
+				left: `${x - left}px`,
+				top: `${y - top}px`
+			});
+
+			clear.classList.remove('none');
+		}
+
+		e.preventDefault();
+	},
+
+	clearHandler() {
+		this.props.dispatch(actions.clearScreen());
+		this.refs.clear.classList.add('none');
 	},
 
 	componentDidUpdate() {

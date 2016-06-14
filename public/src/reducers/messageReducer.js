@@ -24,7 +24,6 @@ export default function (state = INITSTATE.message, action = {}) {
 
 			msgs[owner] = msgObj;
 
-
 			return Object.assign({}, state, {list: msgs});
 		
 		case TYPE.CHANGE_CURRENT_ID:
@@ -36,6 +35,10 @@ export default function (state = INITSTATE.message, action = {}) {
 			msgs[action.id] = msgObj;
 
 			return Object.assign({}, state, {list: msgs, currentId: action.id});
+
+		case TYPE.CLEAR_SCREEN:
+			msgs = Object.assign({}, msgs, {[state.currentId]: {news: [], msg:[]}});
+			return Object.assign({}, state, {list: msgs});
 
 		default:
 			return state;
