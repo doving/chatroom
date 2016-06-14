@@ -22,6 +22,8 @@ export default React.createClass({
 
 	componentDidMount() {
 		document.addEventListener('contextmenu', e => {
+			this.refs.heartDialog.classList.add('none');
+			
             if(e.target.className === 'pic'){
                 Object.assign(this.refs.heartDialog.style, {
                     top: `${e.pageY}px`,
@@ -35,8 +37,8 @@ export default React.createClass({
                 	hearted: !!this.props.favor.find(p => p == current)
                 }, e => this.refs.heartDialog.classList.remove('none'));
 
-                e.preventDefault();
             }
+            e.preventDefault();
         });
 
         document.addEventListener('click', e => {

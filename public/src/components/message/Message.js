@@ -1,5 +1,6 @@
 import React     from 'react';
 import actions   from '../../actions';
+import isOutSide from '../../util/isOutSide';
 
 export default React.createClass({
 	render() {
@@ -34,7 +35,7 @@ export default React.createClass({
 									cls = isMyself ? 'myself' : 'other';
 									return <li key={index} className={'chatitem ' + cls}>
 										<img className='head' src={userObj.head} />
-										{username}
+										{username}<p style={{clear: 'both'}}></p>
 										<p className='msg' dangerouslySetInnerHTML={{__html: msg.content}} />
 									</li>
 							}
@@ -47,19 +48,21 @@ export default React.createClass({
 
 	componentDidMount() {
 		document.addEventListener('click', e => {
-			//const clear = this.refs.clear;
+			const clear = this.refs.clear;
 
-			//if(isOutSide(e.clientX, e.clientY, clear.getBoundingClientRect())){
+			if(isOutSide(e.clientX, e.clientY, clear.getBoundingClientRect())){
 				this.refs.clear.classList.add('none');
-			//}
+			}
 		});
 	},
 
 	contextMenu(e) {
+		this.refs.clear.classList.add('none');
+		
 		const{ message, clear } = this.refs;
 		const { top, left } = message.getBoundingClientRect();
 		const { clientX: x, clientY: y } = e;
-		console.log(top, left, x, y);
+
 		if(/ul|li/i.test(e.target.tagName)){
 			Object.assign(this.refs.clear.style, {
 				left: `${x - left}px`,
@@ -67,9 +70,8 @@ export default React.createClass({
 			});
 
 			clear.classList.remove('none');
+			
 		}
-
-		e.preventDefault();
 	},
 
 	clearHandler() {

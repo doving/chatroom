@@ -21366,9 +21366,19 @@ var _isOutSide = require('../util/isOutSide');
 
 var _isOutSide2 = _interopRequireDefault(_isOutSide);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _toConsumableArray(arr) {
+	if (Array.isArray(arr)) {
+		for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+			arr2[i] = arr[i];
+		}return arr2;
+	} else {
+		return Array.from(arr);
+	}
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'HeartDialog',
@@ -21381,17 +21391,14 @@ exports.default = _react2.default.createClass({
 	render: function render() {
 		var hearted = this.state.hearted;
 
-		return _react2.default.createElement(
-			'div',
-			{ ref: 'heartDialog', className: 'heart-dialog none' + (hearted ? ' hearted' : ''), onClick: this.heartClick },
-			hearted ? '该图已收藏' : '收藏图片',
-			_react2.default.createElement('i', { className: 'icon-heart' })
-		);
+		return _react2.default.createElement('div', { ref: 'heartDialog', className: 'heart-dialog none' + (hearted ? ' hearted' : ''), onClick: this.heartClick }, hearted ? '该图已收藏' : '收藏图片', _react2.default.createElement('i', { className: 'icon-heart' }));
 	},
 	componentDidMount: function componentDidMount() {
 		var _this = this;
 
 		document.addEventListener('contextmenu', function (e) {
+			_this.refs.heartDialog.classList.add('none');
+
 			if (e.target.className === 'pic') {
 				(function () {
 					Object.assign(_this.refs.heartDialog.style, {
@@ -21409,10 +21416,9 @@ exports.default = _react2.default.createClass({
 					}, function (e) {
 						return _this.refs.heartDialog.classList.remove('none');
 					});
-
-					e.preventDefault();
 				})();
 			}
+			e.preventDefault();
 		});
 
 		document.addEventListener('click', function (e) {
@@ -21427,7 +21433,6 @@ exports.default = _react2.default.createClass({
 		var _props = this.props;
 		var favor = _props.favor;
 		var dispatch = _props.dispatch;
-
 
 		favor = [].concat(_toConsumableArray(favor || []));
 
@@ -21652,6 +21657,10 @@ var _actions = require('../../actions');
 
 var _actions2 = _interopRequireDefault(_actions);
 
+var _isOutSide = require('../../util/isOutSide');
+
+var _isOutSide2 = _interopRequireDefault(_isOutSide);
+
 function _interopRequireDefault(obj) {
 	return obj && obj.__esModule ? obj : { default: obj };
 }
@@ -21683,7 +21692,7 @@ exports.default = _react2.default.createClass({
 				case 'msg':
 					var username = isMyself ? _react2.default.createElement('p', { className: 'username' }, _react2.default.createElement('span', { className: 'time' }, '(', _this.timeformat(msg.time), ')'), userObj.nickname) : _react2.default.createElement('p', { className: 'username' }, userObj.nickname, _react2.default.createElement('span', { className: 'time' }, '(', _this.timeformat(msg.time), ')'));
 					cls = isMyself ? 'myself' : 'other';
-					return _react2.default.createElement('li', { key: index, className: 'chatitem ' + cls }, _react2.default.createElement('img', { className: 'head', src: userObj.head }), username, _react2.default.createElement('p', { className: 'msg', dangerouslySetInnerHTML: { __html: msg.content } }));
+					return _react2.default.createElement('li', { key: index, className: 'chatitem ' + cls }, _react2.default.createElement('img', { className: 'head', src: userObj.head }), username, _react2.default.createElement('p', { style: { clear: 'both' } }), _react2.default.createElement('p', { className: 'msg', dangerouslySetInnerHTML: { __html: msg.content } }));
 			}
 		})));
 	},
@@ -21691,14 +21700,16 @@ exports.default = _react2.default.createClass({
 		var _this2 = this;
 
 		document.addEventListener('click', function (e) {
-			//const clear = this.refs.clear;
+			var clear = _this2.refs.clear;
 
-			//if(isOutSide(e.clientX, e.clientY, clear.getBoundingClientRect())){
-			_this2.refs.clear.classList.add('none');
-			//}
+			if ((0, _isOutSide2.default)(e.clientX, e.clientY, clear.getBoundingClientRect())) {
+				_this2.refs.clear.classList.add('none');
+			}
 		});
 	},
 	contextMenu: function contextMenu(e) {
+		this.refs.clear.classList.add('none');
+
 		var _refs = this.refs;
 		var message = _refs.message;
 		var clear = _refs.clear;
@@ -21710,7 +21721,6 @@ exports.default = _react2.default.createClass({
 		var x = e.clientX;
 		var y = e.clientY;
 
-		console.log(top, left, x, y);
 		if (/ul|li/i.test(e.target.tagName)) {
 			Object.assign(this.refs.clear.style, {
 				left: x - left + 'px',
@@ -21719,8 +21729,6 @@ exports.default = _react2.default.createClass({
 
 			clear.classList.remove('none');
 		}
-
-		e.preventDefault();
 	},
 	clearHandler: function clearHandler() {
 		this.props.dispatch(_actions2.default.clearScreen());
@@ -21747,7 +21755,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"../../actions":195,"react":180}],203:[function(require,module,exports){
+},{"../../actions":195,"../../util/isOutSide":215,"react":180}],203:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21766,19 +21774,9 @@ var _actions = require('../../actions');
 
 var _actions2 = _interopRequireDefault(_actions);
 
-function _interopRequireDefault(obj) {
-	return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) {
-	if (Array.isArray(arr)) {
-		for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
-			arr2[i] = arr[i];
-		}return arr2;
-	} else {
-		return Array.from(arr);
-	}
-}
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 exports.default = _react2.default.createClass({
 	displayName: 'Send',
@@ -21792,12 +21790,58 @@ exports.default = _react2.default.createClass({
 
 		var favor = send.favor || [];
 
-		return _react2.default.createElement('div', { className: 'footer' }, _react2.default.createElement('div', { className: 'tools' }, _react2.default.createElement('form', { ref: 'uploadForm', className: 'upload-form' }, _react2.default.createElement('input', { className: 'upload', ref: 'upload', type: 'file',
-			accept: 'image/*;capture=camera', onChange: this.uploadHandler })), _react2.default.createElement('div', { className: 'tool send-img', title: '发送图片', onClick: this.clickImgHandler }, _react2.default.createElement('i', { className: 'icon-picture' })), _react2.default.createElement('div', { ref: 'heart', className: 'tool heart', title: '我的收藏', onClick: this.heartClickHandler }, _react2.default.createElement('i', { className: 'icon-heart' })), _react2.default.createElement('div', { ref: 'heartBox', className: 'heart-pics none' }, _react2.default.createElement('div', { className: 'pics-box', onClick: this.heartItemClickHandler }, favor.map(function (url, i) {
-			return _react2.default.createElement('div', { key: i, className: 'heart-item' }, _react2.default.createElement('div', { className: 'del-img', title: '删除' }, '×'), _react2.default.createElement('img', { className: 'heart-img', src: url }));
-		})))), _react2.default.createElement('section', { className: 'input', ref: 'input', contentEditable: 'true',
-			onInput: this.inputHandler, onDrop: this.dropHandler,
-			onPaste: this.pasteHandler, onKeyDown: this.keydownHandler }), _react2.default.createElement('button', { className: 'send', onClick: this.sendHandler }, '发送'));
+		return _react2.default.createElement(
+			'div',
+			{ className: 'footer' },
+			_react2.default.createElement(
+				'div',
+				{ className: 'tools' },
+				_react2.default.createElement(
+					'form',
+					{ ref: 'uploadForm', className: 'upload-form' },
+					_react2.default.createElement('input', { className: 'upload', ref: 'upload', type: 'file',
+						accept: 'image/*;capture=camera', onChange: this.uploadHandler })
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'tool send-img', title: '发送图片', onClick: this.clickImgHandler },
+					_react2.default.createElement('i', { className: 'icon-picture' })
+				),
+				_react2.default.createElement(
+					'div',
+					{ ref: 'heart', className: 'tool heart', title: '我的收藏', onClick: this.heartClickHandler },
+					_react2.default.createElement('i', { className: 'icon-heart' })
+				),
+				_react2.default.createElement(
+					'div',
+					{ ref: 'heartBox', className: 'heart-pics none' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'pics-box', onClick: this.heartItemClickHandler },
+						favor.map(function (url, i) {
+							return _react2.default.createElement(
+								'div',
+								{ key: i, className: 'heart-item' },
+								_react2.default.createElement(
+									'div',
+									{ className: 'del-img', title: '删除' },
+									'×'
+								),
+								_react2.default.createElement('img', { className: 'heart-img', src: url })
+							);
+						})
+					)
+				)
+			),
+			_react2.default.createElement('section', { className: 'input', ref: 'input', contentEditable: 'true',
+				onInput: this.inputHandler, onDrop: this.dropHandler,
+				onPaste: this.pasteHandler, onKeyDown: this.keydownHandler }),
+			_react2.default.createElement(
+				'button',
+				{ className: 'send', onClick: this.sendHandler },
+				'发送'
+			)
+		);
 	},
 	componentDidMount: function componentDidMount() {
 		var _this = this;
@@ -21805,6 +21849,7 @@ exports.default = _react2.default.createClass({
 		document.addEventListener('click', function (e) {
 			var x = e.clientX;
 			var y = e.clientY;
+
 
 			var heartO = _this.refs.heart.getBoundingClientRect();
 			var heartBoxO = _this.refs.heartBox.getBoundingClientRect();
@@ -21818,6 +21863,7 @@ exports.default = _react2.default.createClass({
 		var _props = this.props;
 		var send = _props.send;
 		var dispatch = _props.dispatch;
+
 
 		var favor = [].concat(_toConsumableArray(send.favor || []));
 
@@ -21887,6 +21933,7 @@ exports.default = _react2.default.createClass({
 	},
 	uploadHandler: function uploadHandler(e) {
 		var socket = this.props.socket;
+
 
 		var img = e.target.files[0];
 
@@ -21989,6 +22036,7 @@ exports.default = _react2.default.createClass({
 		var _props2 = this.props;
 		var socket = _props2.socket;
 		var currentId = _props2.currentId;
+
 
 		var input = this.refs.input;
 		var msg = input.innerHTML.trim();
@@ -22435,27 +22483,11 @@ var _INITSTATE = require('../config/INITSTATE');
 
 var _INITSTATE2 = _interopRequireDefault(_INITSTATE);
 
-function _interopRequireDefault(obj) {
-			return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) {
-			if (key in obj) {
-						Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });
-			} else {
-						obj[key] = value;
-			}return obj;
-}
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _toConsumableArray(arr) {
-			if (Array.isArray(arr)) {
-						for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
-									arr2[i] = arr[i];
-						}return arr2;
-			} else {
-						return Array.from(arr);
-			}
-}
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 },{"../config/ACTIONTYPE":208,"../config/INITSTATE":209}],213:[function(require,module,exports){
 'use strict';
