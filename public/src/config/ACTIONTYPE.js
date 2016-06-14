@@ -4,5 +4,6 @@ export default Object.freeze({
 	RECEIVE_MSG      : 'RECEIVE_MSG',
 	USER_OUT         : 'USER_OUT',
 	CHANGE_CURRENT_ID: 'CHANGE_CURRENT_ID',
+	CHANGE_FAVOR     : 'CHANGE_FAVOR',
 
 });

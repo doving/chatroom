@@ -5,13 +5,13 @@ import Send        from './Send';
 
 export default React.createClass({
 	render() {
-		const { user, message } = this.props;
+		const { user, message, send, dispatch } = this.props;
 
 		return (
 			<div className='right'>
 				<Head user={user} currentId={message.currentId}/>
 				<Message user={user} message={message}/>
-				<Send socket={user.socket} currentId={message.currentId} user={user}/>
+				<Send dispatch={dispatch} send={send} currentId={message.currentId} socket={user.socket}/>
 			</div>
 		);
 	}

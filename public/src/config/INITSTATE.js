@@ -42,7 +42,6 @@ export default Object.freeze({
 		}
 	},
 	send: {
-		favor: [],
-
+		favor: JSON.parse(localStorage.getItem('pics')||'[]'),
 	}
 })

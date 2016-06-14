@@ -4,6 +4,7 @@ import { connect }     from 'react-redux';
 import User            from './components/user';
 import Message         from './components/message';
 import Login           from './components/Login';
+import HeartDialog     from './components/HeartDialog';
 
 import actions         from './actions';
 
@@ -12,16 +13,16 @@ const App =  React.createClass({
 		const { user, message, send, dispatch } = this.props;
 
 		return(
-			this.props.user.isLogin ? 
 			<div>
-				<div className='main'>
-					<User user={user} message={message} dispatch={dispatch}/>
-					<Message user={user} message={message} />
-				</div>
-			</div>
-			:
-			<div>
-				<Login dispatch={dispatch} socket={user.socket} defaultHead={user.defaultHead}/>
+				<HeartDialog favor={send.favor} dispatch={dispatch} />
+				{	
+					this.props.user.isLogin ?
+					<div className='main'>
+						<User user={user} message={message} dispatch={dispatch}/>
+						<Message dispatch={dispatch} user={user} message={message} send={send} />
+					</div> :
+					<Login dispatch={dispatch} socket={user.socket} defaultHead={user.defaultHead}/>
+				}
 			</div>
 		)
 	},
@@ -49,6 +50,7 @@ const App =  React.createClass({
 			});
 		})
 	}
+
 });
 
 const mapStateToProps = function(state) {

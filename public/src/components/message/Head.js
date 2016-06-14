@@ -1,4 +1,5 @@
-import React from 'react';
+import React      from 'react';
+import isOutside  from '../../util/isOutside';
 
 export default React.createClass({
 	getInitialState() {
@@ -38,6 +39,14 @@ export default React.createClass({
 				<div className='members' ref='members'>{members}</div>
 			</div>
 		);
+	},
+
+	componentDidMount() {
+		document.addEventListener('click', e => {
+			if(isOutside(e.pageX, e.pageY, this.refs.members.getBoundingClientRect())){
+				this.refs.members.classList.remove('open');
+			}
+		});
 	},
 
 	clickHandler() {

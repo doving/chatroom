@@ -21157,6 +21157,10 @@ var _Login = require('./components/Login');
 
 var _Login2 = _interopRequireDefault(_Login);
 
+var _HeartDialog = require('./components/HeartDialog');
+
+var _HeartDialog2 = _interopRequireDefault(_HeartDialog);
+
 var _actions = require('./actions');
 
 var _actions2 = _interopRequireDefault(_actions);
@@ -21173,19 +21177,16 @@ var App = _react2.default.createClass({
 		var dispatch = _props.dispatch;
 
 
-		return this.props.user.isLogin ? _react2.default.createElement(
+		return _react2.default.createElement(
 			'div',
 			null,
-			_react2.default.createElement(
+			_react2.default.createElement(_HeartDialog2.default, { favor: send.favor, dispatch: dispatch }),
+			this.props.user.isLogin ? _react2.default.createElement(
 				'div',
 				{ className: 'main' },
 				_react2.default.createElement(_user2.default, { user: user, message: message, dispatch: dispatch }),
-				_react2.default.createElement(_message2.default, { user: user, message: message })
-			)
-		) : _react2.default.createElement(
-			'div',
-			null,
-			_react2.default.createElement(_Login2.default, { dispatch: dispatch, socket: user.socket, defaultHead: user.defaultHead })
+				_react2.default.createElement(_message2.default, { dispatch: dispatch, user: user, message: message, send: send })
+			) : _react2.default.createElement(_Login2.default, { dispatch: dispatch, socket: user.socket, defaultHead: user.defaultHead })
 		);
 	},
 	componentWillMount: function componentWillMount() {
@@ -21228,7 +21229,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(App);
 
-},{"./actions":195,"./components/Login":199,"./components/message":203,"./components/user":206,"react":180,"react-redux":33}],195:[function(require,module,exports){
+},{"./actions":195,"./components/HeartDialog":199,"./components/Login":200,"./components/message":204,"./components/user":207,"react":180,"react-redux":33}],195:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21274,15 +21275,29 @@ exports.default = {
 	}
 };
 
-},{"../config/ACTIONTYPE":207}],197:[function(require,module,exports){
-"use strict";
+},{"../config/ACTIONTYPE":208}],197:[function(require,module,exports){
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.default = {};
 
-},{}],198:[function(require,module,exports){
+var _ACTIONTYPE = require('../config/ACTIONTYPE');
+
+var _ACTIONTYPE2 = _interopRequireDefault(_ACTIONTYPE);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+	changeFavor: function changeFavor(favor) {
+		return {
+			type: _ACTIONTYPE2.default.CHANGE_FAVOR,
+			favor: favor
+		};
+	}
+};
+
+},{"../config/ACTIONTYPE":208}],198:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21327,7 +21342,103 @@ exports.default = {
 	}
 };
 
-},{"../config/ACTIONTYPE":207}],199:[function(require,module,exports){
+},{"../config/ACTIONTYPE":208}],199:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _actions = require('../actions');
+
+var _actions2 = _interopRequireDefault(_actions);
+
+var _isOutSide = require('../util/isOutSide');
+
+var _isOutSide2 = _interopRequireDefault(_isOutSide);
+
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
+
+function _toConsumableArray(arr) {
+	if (Array.isArray(arr)) {
+		for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+			arr2[i] = arr[i];
+		}return arr2;
+	} else {
+		return Array.from(arr);
+	}
+}
+
+exports.default = _react2.default.createClass({
+	displayName: 'HeartDialog',
+	getInitialState: function getInitialState() {
+		return {
+			current: '',
+			hearted: false
+		};
+	},
+	render: function render() {
+		var hearted = this.state.hearted;
+
+		return _react2.default.createElement('div', { ref: 'heartDialog', className: 'heart-dialog none' + (hearted ? ' hearted' : ''), onClick: this.heartClick }, hearted ? '该图已收藏' : '收藏图片', _react2.default.createElement('i', { className: 'icon-heart' }));
+	},
+	componentDidMount: function componentDidMount() {
+		var _this = this;
+
+		document.addEventListener('contextmenu', function (e) {
+			if (e.target.className === 'pic') {
+				(function () {
+					Object.assign(_this.refs.heartDialog.style, {
+						top: e.pageY + 'px',
+						left: e.pageX + 'px'
+					});
+
+					var current = e.target.src;
+
+					_this.setState({
+						current: current,
+						hearted: !!_this.props.favor.find(function (p) {
+							return p == current;
+						})
+					}, function (e) {
+						return _this.refs.heartDialog.classList.remove('none');
+					});
+
+					e.preventDefault();
+				})();
+			}
+		});
+
+		document.addEventListener('click', function (e) {
+			if ((0, _isOutSide2.default)(e.pageX, e.pageY, _this.refs.heartDialog.getBoundingClientRect())) {
+				_this.refs.heartDialog.classList.add('none');
+			}
+		});
+	},
+	heartClick: function heartClick() {
+		if (this.state.hearted) return;
+
+		var _props = this.props;
+		var favor = _props.favor;
+		var dispatch = _props.dispatch;
+
+		favor = [].concat(_toConsumableArray(favor || []));
+
+		favor.push(this.state.current);
+
+		dispatch(_actions2.default.changeFavor(favor));
+
+		this.refs.heartDialog.classList.add('none');
+	}
+});
+
+},{"../actions":195,"../util/isOutSide":215,"react":180}],200:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21430,7 +21541,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"../../actions":195,"react":180}],200:[function(require,module,exports){
+},{"../../actions":195,"react":180}],201:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21441,19 +21552,13 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-function _interopRequireDefault(obj) {
-	return obj && obj.__esModule ? obj : { default: obj };
-}
+var _isOutside = require('../../util/isOutside');
 
-function _toConsumableArray(arr) {
-	if (Array.isArray(arr)) {
-		for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
-			arr2[i] = arr[i];
-		}return arr2;
-	} else {
-		return Array.from(arr);
-	}
-}
+var _isOutside2 = _interopRequireDefault(_isOutside);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 exports.default = _react2.default.createClass({
 	displayName: 'Head',
@@ -21467,6 +21572,7 @@ exports.default = _react2.default.createClass({
 		var user = _props.user;
 		var currentId = _props.currentId;
 
+
 		var currentIndex = user.list.findIndex(function (o) {
 			return o.id == currentId;
 		});
@@ -21476,21 +21582,61 @@ exports.default = _react2.default.createClass({
 
 		if (currentId == 'HALL') {
 			[user.myself].concat(_toConsumableArray(user.list)).forEach(function (o, i) {
-				o.active && members.push(_react2.default.createElement('div', { key: i, className: 'member' }, _react2.default.createElement('img', { className: 'head', src: o.head }), _react2.default.createElement('p', { className: 'nickname' }, o.nickname)));
+				o.active && members.push(_react2.default.createElement(
+					'div',
+					{ key: i, className: 'member' },
+					_react2.default.createElement('img', { className: 'head', src: o.head }),
+					_react2.default.createElement(
+						'p',
+						{ className: 'nickname' },
+						o.nickname
+					)
+				));
 			});
 		} else {
 			var o = user.list[currentIndex];
-			members = _react2.default.createElement('div', { className: 'member' }, _react2.default.createElement('img', { className: 'head', src: o.head }), _react2.default.createElement('p', { className: 'nickname' }, o.nickname));
+			members = _react2.default.createElement(
+				'div',
+				{ className: 'member' },
+				_react2.default.createElement('img', { className: 'head', src: o.head }),
+				_react2.default.createElement(
+					'p',
+					{ className: 'nickname' },
+					o.nickname
+				)
+			);
 		}
 
-		return _react2.default.createElement('div', { className: 'message-title' }, _react2.default.createElement('p', { className: 'title', onClick: this.clickHandler }, msgTitle), _react2.default.createElement('div', { className: 'members', ref: 'members' }, members));
+		return _react2.default.createElement(
+			'div',
+			{ className: 'message-title' },
+			_react2.default.createElement(
+				'p',
+				{ className: 'title', onClick: this.clickHandler },
+				msgTitle
+			),
+			_react2.default.createElement(
+				'div',
+				{ className: 'members', ref: 'members' },
+				members
+			)
+		);
+	},
+	componentDidMount: function componentDidMount() {
+		var _this = this;
+
+		document.addEventListener('click', function (e) {
+			if ((0, _isOutside2.default)(e.pageX, e.pageY, _this.refs.members.getBoundingClientRect())) {
+				_this.refs.members.classList.remove('open');
+			}
+		});
 	},
 	clickHandler: function clickHandler() {
 		this.refs.members.classList.toggle('open');
 	}
 });
 
-},{"react":180}],201:[function(require,module,exports){
+},{"../../util/isOutside":216,"react":180}],202:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21591,7 +21737,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"react":180}],202:[function(require,module,exports){
+},{"react":180}],203:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21602,83 +21748,121 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _isOutside = require('../../util/isOutside');
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+var _isOutside2 = _interopRequireDefault(_isOutside);
+
+var _actions = require('../../actions');
+
+var _actions2 = _interopRequireDefault(_actions);
+
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
+
+function _toConsumableArray(arr) {
+	if (Array.isArray(arr)) {
+		for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+			arr2[i] = arr[i];
+		}return arr2;
+	} else {
+		return Array.from(arr);
+	}
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'Send',
+
+	heartOpen: false,
+
+	imgMaxSize: 100, //k
+
 	render: function render() {
-		return _react2.default.createElement(
-			'div',
-			{ className: 'footer' },
-			_react2.default.createElement(
-				'div',
-				{ className: 'tools' },
-				_react2.default.createElement(
-					'form',
-					{ ref: 'uploadForm', className: 'upload-form' },
-					_react2.default.createElement('input', { className: 'upload', ref: 'upload', type: 'file',
-						accept: 'image/*;capture=camera', onChange: this.uploadHandler })
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'tool send-img', title: '发送图片', onClick: this.clickImgHandler },
-					_react2.default.createElement('i', { className: 'icon-picture' })
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'tool heart', title: '我的收藏' },
-					_react2.default.createElement('i', { className: 'icon-heart' })
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'heart-pics' },
-					_react2.default.createElement('div', { className: 'pics-box' })
-				)
-			),
-			_react2.default.createElement('section', { className: 'input', ref: 'input', contentEditable: 'true',
-				onInput: this.inputHandler, onDrop: this.dropHandler,
-				onPaste: this.pasteHandler, onKeyDown: this.keydownHandler }),
-			_react2.default.createElement(
-				'button',
-				{ className: 'send', onClick: this.sendHandler },
-				'发送'
-			)
-		);
+		var send = this.props.send;
+
+		var favor = send.favor || [];
+
+		return _react2.default.createElement('div', { className: 'footer' }, _react2.default.createElement('div', { className: 'tools' }, _react2.default.createElement('form', { ref: 'uploadForm', className: 'upload-form' }, _react2.default.createElement('input', { className: 'upload', ref: 'upload', type: 'file',
+			accept: 'image/*;capture=camera', onChange: this.uploadHandler })), _react2.default.createElement('div', { className: 'tool send-img', title: '发送图片', onClick: this.clickImgHandler }, _react2.default.createElement('i', { className: 'icon-picture' })), _react2.default.createElement('div', { ref: 'heart', className: 'tool heart', title: '我的收藏', onClick: this.heartClickHandler }, _react2.default.createElement('i', { className: 'icon-heart' })), _react2.default.createElement('div', { ref: 'heartBox', className: 'heart-pics none' }, _react2.default.createElement('div', { className: 'pics-box', onClick: this.heartItemClickHandler }, favor.map(function (url, i) {
+			return _react2.default.createElement('div', { key: i, className: 'heart-item' }, _react2.default.createElement('div', { className: 'del-img', title: '删除' }, '×'), _react2.default.createElement('img', { className: 'heart-img', src: url }));
+		})))), _react2.default.createElement('section', { className: 'input', ref: 'input', contentEditable: 'true',
+			onInput: this.inputHandler, onDrop: this.dropHandler,
+			onPaste: this.pasteHandler, onKeyDown: this.keydownHandler }), _react2.default.createElement('button', { className: 'send', onClick: this.sendHandler }, '发送'));
+	},
+	componentDidMount: function componentDidMount() {
+		var _this = this;
+
+		document.addEventListener('click', function (e) {
+			var x = e.pageX;
+			var y = e.pageY;
+
+			var heartO = _this.refs.heart.getBoundingClientRect();
+			var heartBoxO = _this.refs.heartBox.getBoundingClientRect();
+
+			if ((0, _isOutside2.default)(x, y, heartO) && (0, _isOutside2.default)(x, y, heartBoxO)) {
+				_this.refs.heartBox.classList.add('none');
+			}
+		});
+	},
+	heartItemClickHandler: function heartItemClickHandler(e) {
+		var _props = this.props;
+		var send = _props.send;
+		var dispatch = _props.dispatch;
+
+		var favor = [].concat(_toConsumableArray(send.favor || []));
+
+		var target = e.target;
+
+		if (/^heart-img$|^heart-item$/.test(target.className)) {
+
+			var src = target.className === 'heart-item' ? target.childNodes[0].src : target.src;
+
+			this.dropInsert(src);
+		} else if ('del-img' === target.className) {
+			var index = favor.findIndex(function (pic) {
+				return pic === target.nextElementSibling.src;
+			});
+
+			favor.splice(index, 1);
+
+			dispatch(_actions2.default.changeFavor(favor));
+		}
+	},
+	heartClickHandler: function heartClickHandler(e) {
+		this.refs.heartBox.classList.toggle('none');
 	},
 	clickImgHandler: function clickImgHandler() {
 		this.refs.upload.click();
 	},
 	inputHandler: function inputHandler() {},
 	dropHandler: function dropHandler(e) {
-		var _this = this;
+		var _this2 = this;
 
 		var data = e.dataTransfer;
 
 		[].concat(_toConsumableArray(data.items)).forEach(function (item) {
 			var type = item.type;
 			if (type.match(/^image\//)) {
-				_this.loadImg(item.getAsFile());
+				_this2.loadImg(item.getAsFile());
 			} else if (type === 'text/plain') {
-				item.getAsString(_this.dropInsert);
+				item.getAsString(_this2.dropInsert);
 			}
 		});
 
 		e.preventDefault();
 	},
 	pasteHandler: function pasteHandler(e) {
-		var _this2 = this;
+		var _this3 = this;
 
 		var data = e.clipboardData;
 
 		[].concat(_toConsumableArray(data.items)).forEach(function (item) {
 			var type = item.type;
 			if (type.match(/^image\//)) {
-				_this2.loadImg(item.getAsFile(), true);
+				_this3.loadImg(item.getAsFile(), true);
 			} else if (type === 'text/plain') {
 				item.getAsString(function (str) {
-					_this2.insertCont(str, 'text');
+					_this3.insertCont(str, 'text');
 				});
 			}
 		});
@@ -21693,7 +21877,6 @@ exports.default = _react2.default.createClass({
 	},
 	uploadHandler: function uploadHandler(e) {
 		var socket = this.props.socket;
-
 
 		var img = e.target.files[0];
 
@@ -21719,22 +21902,20 @@ exports.default = _react2.default.createClass({
 		sel.addRange(range);
 	},
 	loadImg: function loadImg(img, isPaste) {
-		var _this3 = this;
+		var _this4 = this;
 
 		if (img && /^image\/[a-z]+$/.test(img.type)) {
 			if (img.size <= 0) return;
 
-			var maxsize = 100;
-
-			if (img.size > 1024 * maxsize) {
-				showTip('图片不得超过' + maxsize + 'k', 'warning');
+			if (img.size > 1024 * this.imgMaxSize) {
+				showTip('图片不得超过' + this.imgMaxSize + 'k', 'warning');
 				return;
 			}
 
 			var fr = new FileReader();
 
 			fr.onload = function (e) {
-				isPaste ? _this3.insertCont(e.target.result) : _this3.dropInsert(e.target.result);
+				isPaste ? _this4.insertCont(e.target.result) : _this4.dropInsert(e.target.result);
 			};
 
 			fr.readAsDataURL(img);
@@ -21795,10 +21976,9 @@ exports.default = _react2.default.createClass({
 		selection.addRange(range);
 	},
 	sendHandler: function sendHandler() {
-		var _props = this.props;
-		var socket = _props.socket;
-		var currentId = _props.currentId;
-
+		var _props2 = this.props;
+		var socket = _props2.socket;
+		var currentId = _props2.currentId;
 
 		var input = this.refs.input;
 		var msg = input.innerHTML.trim();
@@ -21815,7 +21995,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"react":180}],203:[function(require,module,exports){
+},{"../../actions":195,"../../util/isOutside":216,"react":180}],204:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21846,6 +22026,8 @@ exports.default = _react2.default.createClass({
 		var _props = this.props;
 		var user = _props.user;
 		var message = _props.message;
+		var send = _props.send;
+		var dispatch = _props.dispatch;
 
 
 		return _react2.default.createElement(
@@ -21853,12 +22035,12 @@ exports.default = _react2.default.createClass({
 			{ className: 'right' },
 			_react2.default.createElement(_Head2.default, { user: user, currentId: message.currentId }),
 			_react2.default.createElement(_Message2.default, { user: user, message: message }),
-			_react2.default.createElement(_Send2.default, { socket: user.socket, currentId: message.currentId, user: user })
+			_react2.default.createElement(_Send2.default, { dispatch: dispatch, send: send, currentId: message.currentId, socket: user.socket })
 		);
 	}
 });
 
-},{"./Head":200,"./Message":201,"./Send":202,"react":180}],204:[function(require,module,exports){
+},{"./Head":201,"./Message":202,"./Send":203,"react":180}],205:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21898,7 +22080,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"react":180}],205:[function(require,module,exports){
+},{"react":180}],206:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22001,7 +22183,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"../../actions":195,"react":180}],206:[function(require,module,exports){
+},{"../../actions":195,"react":180}],207:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22043,7 +22225,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"./MyselfInfo":204,"./UserList":205,"react":180}],207:[function(require,module,exports){
+},{"./MyselfInfo":205,"./UserList":206,"react":180}],208:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22054,12 +22236,13 @@ exports.default = Object.freeze({
 	USER_JOIN: 'USER_JOIN', //有新用户加入
 	RECEIVE_MSG: 'RECEIVE_MSG',
 	USER_OUT: 'USER_OUT',
-	CHANGE_CURRENT_ID: 'CHANGE_CURRENT_ID'
+	CHANGE_CURRENT_ID: 'CHANGE_CURRENT_ID',
+	CHANGE_FAVOR: 'CHANGE_FAVOR'
 
 });
 
-},{}],208:[function(require,module,exports){
-"use strict";
+},{}],209:[function(require,module,exports){
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -22108,12 +22291,11 @@ exports.default = Object.freeze({
 		}
 	},
 	send: {
-		favor: []
-
+		favor: JSON.parse(localStorage.getItem('pics') || '[]')
 	}
 });
 
-},{}],209:[function(require,module,exports){
+},{}],210:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -22149,7 +22331,7 @@ window.getState = store.getState;
 	_react2.default.createElement(_App2.default, null)
 ), document.querySelector('#container'));
 
-},{"./App":194,"./config/INITSTATE":208,"./reducers":210,"react":180,"react-dom":30,"react-redux":33,"redux":186}],210:[function(require,module,exports){
+},{"./App":194,"./config/INITSTATE":209,"./reducers":211,"react":180,"react-dom":30,"react-redux":33,"redux":186}],211:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22178,7 +22360,7 @@ exports.default = (0, _redux.combineReducers)({
 	send: _sendReducer2.default
 });
 
-},{"./messageReducer":211,"./sendReducer":212,"./userReducer":213,"redux":186}],211:[function(require,module,exports){
+},{"./messageReducer":212,"./sendReducer":213,"./userReducer":214,"redux":186}],212:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22242,7 +22424,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-},{"../config/ACTIONTYPE":207,"../config/INITSTATE":208}],212:[function(require,module,exports){
+},{"../config/ACTIONTYPE":208,"../config/INITSTATE":209}],213:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22250,10 +22432,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function () {
-	var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	var state = arguments.length <= 0 || arguments[0] === undefined ? _INITSTATE2.default.send : arguments[0];
 	var action = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-	switch (action.TYPE) {
+	switch (action.type) {
+		case _ACTIONTYPE2.default.CHANGE_FAVOR:
+			localStorage.setItem('pics', JSON.stringify(action.favor));
+			return Object.assign({}, state, { favor: action.favor });
+
 		default:
 			return state;
 	}
@@ -22263,9 +22449,15 @@ var _ACTIONTYPE = require('../config/ACTIONTYPE');
 
 var _ACTIONTYPE2 = _interopRequireDefault(_ACTIONTYPE);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _INITSTATE = require('../config/INITSTATE');
 
-},{"../config/ACTIONTYPE":207}],213:[function(require,module,exports){
+var _INITSTATE2 = _interopRequireDefault(_INITSTATE);
+
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
+
+},{"../config/ACTIONTYPE":208,"../config/INITSTATE":209}],214:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22325,4 +22517,26 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-},{"../config/ACTIONTYPE":207,"../config/INITSTATE":208}]},{},[209]);
+},{"../config/ACTIONTYPE":208,"../config/INITSTATE":209}],215:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function (x, y, obj) {
+    return x < obj.left || x > obj.right || y > obj.bottom || y < obj.top;
+};
+
+},{}],216:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function (x, y, obj) {
+    return x < obj.left || x > obj.right || y > obj.bottom || y < obj.top;
+};
+
+},{}]},{},[210]);

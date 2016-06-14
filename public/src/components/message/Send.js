@@ -1,7 +1,16 @@
 import React       from 'react';
+import isOutside   from '../../util/isOutside';
+import actions     from '../../actions';
 
 export default React.createClass({
+	heartOpen: false,
+
+	imgMaxSize: 100, //k
+
 	render() {
+		const { send } = this.props;
+		const favor = send.favor || [];
+
 		return (
 			<div className='footer'>
 				<div className='tools'>
@@ -12,11 +21,18 @@ export default React.createClass({
 					<div className='tool send-img' title='发送图片' onClick={this.clickImgHandler}>
 						<i className='icon-picture'></i>
 					</div>
-					<div className='tool heart' title='我的收藏'>
+					<div ref='heart' className='tool heart' title='我的收藏' onClick={this.heartClickHandler}>
 						<i className='icon-heart'></i>
 					</div>
-					<div className='heart-pics'>
-						<div className='pics-box'></div>
+					<div ref='heartBox' className='heart-pics none'>
+						<div className='pics-box' onClick={this.heartItemClickHandler}>
+							{favor.map((url, i) => 
+								<div key={i} className="heart-item">
+									<div className="del-img" title="删除">×</div>
+									<img className="heart-img" src={url} />
+								</div>
+							)}
+						</div>
 					</div>
 				</div>
 				<section className='input' ref='input' contentEditable='true' 
@@ -25,6 +41,45 @@ export default React.createClass({
 				<button className='send' onClick={this.sendHandler}>发送</button>
 			</div>
 		);
+	},
+
+	componentDidMount() {
+		document.addEventListener('click', e => {
+			const { pageX: x, pageY: y } = e;
+
+			const heartO = this.refs.heart.getBoundingClientRect();
+			const heartBoxO = this.refs.heartBox.getBoundingClientRect();
+
+			if(isOutside(x, y, heartO) && isOutside(x, y, heartBoxO)){
+				this.refs.heartBox.classList.add('none');
+			}
+		});
+	},
+
+	heartItemClickHandler(e) {
+		const { send, dispatch } = this.props;
+
+		let favor = [...send.favor||[]];
+
+        let target = e.target;
+
+        if(/^heart-img$|^heart-item$/.test(target.className)){
+
+            let src = target.className === 'heart-item' ? 
+                target.childNodes[0].src : target.src;
+
+            this.dropInsert(src);
+        }else if('del-img' === target.className){
+            let index = favor.findIndex(pic => pic === target.nextElementSibling.src);
+
+           	favor.splice(index, 1);
+
+            dispatch(actions.changeFavor(favor));
+        }
+	},
+
+	heartClickHandler(e) {
+		this.refs.heartBox.classList.toggle('none');
 	},
 
 	clickImgHandler() {
@@ -107,10 +162,8 @@ export default React.createClass({
 		if(img && /^image\/[a-z]+$/.test(img.type)){
 	        if(img.size <= 0)return;
 
-	        let maxsize = 100;
-
-	        if(img.size > 1024 * maxsize){
-	            showTip(`图片不得超过${maxsize}k`, 'warning');
+	        if(img.size > 1024 * this.imgMaxSize){
+	            showTip(`图片不得超过${this.imgMaxSize}k`, 'warning');
 	            return;
 	        }
 
