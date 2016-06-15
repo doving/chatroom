@@ -152,6 +152,8 @@ li{
     background: #2e3238;
     color: #fff;
     z-index: 3;
+    transform: translateX(0);
+    -webkit-transform: translateX(0);
 }
 .left .myself-info{
     padding: 16px;
@@ -364,7 +366,9 @@ li{
         border: solid 1px #ccc;
         color: #ccc;
         z-index: 2;
-        i{
+        cursor: default;
+        i{  
+            display: block;
             font-size: 27px;
         }
         &:hover{
@@ -394,6 +398,7 @@ li{
         background: #eee;
         &.open{
             transform: translateY(0);
+            -webkit-transform: translateY(0);
             opacity: 1;
         }
         .member{
