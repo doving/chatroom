@@ -130,7 +130,7 @@ export default React.createClass({
 	},
 
 	uploadHandler(e) {
-		const { socket } = this.props;
+		const { dispatch, myself, currentId } = this.props;
 
 		let img = e.target.files[0];
 
@@ -139,7 +139,12 @@ export default React.createClass({
         if(/^image\/[a-z]+$/.test(img.type)){
             this.loadImg(img);
         }else{
-            showTip('请选择图片', 'warning');
+            dispatch(actions.receiveMsg({
+            	content: '请选择图片', 
+            	type: 'warning',
+            	id: myself.id,
+            	target: currentId
+            }));
         }
         
         this.refs.uploadForm.reset();
@@ -159,11 +164,18 @@ export default React.createClass({
 	},
 
 	loadImg(img, isPaste) {
+		const { dispatch, myself, currentId } = this.props;
+
 		if(img && /^image\/[a-z]+$/.test(img.type)){
 	        if(img.size <= 0)return;
 
 	        if(img.size > 1024 * this.imgMaxSize){
-	            showTip(`图片不得超过${this.imgMaxSize}k`, 'warning');
+	            dispatch(actions.receiveMsg({
+	            	content: `图片不得超过${this.imgMaxSize}k`, 
+	            	type: 'warning',
+	            	id: myself.id,
+	            	target: currentId
+	            }));
 	            return;
 	        }
 

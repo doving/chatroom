@@ -42,13 +42,44 @@ const App =  React.createClass({
 
 			socket.on('userJoin', user => this.props.user.isLogin && dispatch(actions.userJoin(user)));
 
-			socket.on('chat', obj => this.props.user.isLogin && dispatch(actions.receiveMsg(obj, this.props.user.myself.id)));
+			socket.on('chat', obj => {
+				const { myself, list } = this.props.user;
+
+				let o =list.find(u => u.id === obj.id);
+
+				this.props.user.isLogin && dispatch(actions.receiveMsg(obj, myself.id));
+
+				document.hidden && Notification && Notification.requestPermission(permission => {
+					if(permission == 'granted'){
+						let notification = new Notification(
+							obj.target == 'HALL' ? `大厅-${o.nickname}` : o.nickname ,
+							{
+								icon: o.head,
+								body: obj.content
+							});
+
+						notification.addEventListener('click', e => {
+							window.focus();
+							dispatch(actions.changeCurrentId(obj.target === myself.id ? obj.id : obj.target));
+							notification.close();
+						});
+					}
+				});
+
+				Notification.onclick = e => {
+					console.log('e:', e);
+				};
+			});
 
 			socket.on('userOut', id => {
 				this.props.user.isLogin && dispatch(actions.userOut(id));
 				id === this.props.message.currentId && dispatch(actions.changeCurrentId('HALL'));
 			});
 		})
+
+		/*document.addEventListener('visibilitychange', e => {
+
+		});*/
 	}
 
 });

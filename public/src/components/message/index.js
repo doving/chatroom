@@ -11,7 +11,7 @@ export default React.createClass({
 			<div className='right'>
 				<Head user={user} currentId={message.currentId}/>
 				<Message user={user} message={message} dispatch={dispatch}/>
-				<Send dispatch={dispatch} send={send} currentId={message.currentId} socket={user.socket}/>
+				<Send dispatch={dispatch} send={send} currentId={message.currentId} socket={user.socket} myself={user.myself}/>
 			</div>
 		);
 	}

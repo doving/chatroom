@@ -38,6 +38,12 @@ export default React.createClass({
 										{username}<p style={{clear: 'both'}}></p>
 										<p className='msg' dangerouslySetInnerHTML={{__html: msg.content}} />
 									</li>
+								case 'warning':
+								case 'tip':
+									return <li key={index} className='chatitem msgitem'>
+										<p className={'msgcontent ' + msg.type}>{msg.content}</p>
+									</li>
+
 							}
 						})
 					}
@@ -58,7 +64,7 @@ export default React.createClass({
 
 	contextMenu(e) {
 		this.refs.clear.classList.add('none');
-		
+
 		const{ message, clear } = this.refs;
 		const { top, left } = message.getBoundingClientRect();
 		const { clientX: x, clientY: y } = e;
