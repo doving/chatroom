@@ -21208,22 +21208,23 @@ var App = _react2.default.createClass({
 			});
 
 			socket.on('chat', function (obj) {
-				var _props$user = _this.props.user;
-				var myself = _props$user.myself;
-				var list = _props$user.list;
+				var user = _this.props.user;
+				var myself = user.myself;
+				var list = user.list;
 
 				var o = list.find(function (u) {
 					return u.id === obj.id;
 				});
 
-				_this.props.user.isLogin && dispatch(_actions2.default.receiveMsg(obj, myself.id));
+				user.isLogin && dispatch(_actions2.default.receiveMsg(obj, myself.id));
 
 				document.hidden && Notification && Notification.requestPermission(function (permission) {
 					if (permission == 'granted') {
 						(function () {
 							var notification = new Notification(obj.target == 'HALL' ? '大厅-' + o.nickname : o.nickname, {
 								icon: o.head,
-								body: obj.content
+								body: obj.content,
+								tag: obj.target
 							});
 
 							notification.addEventListener('click', function (e) {
@@ -21638,7 +21639,7 @@ exports.default = _react2.default.createClass({
 			members = _react2.default.createElement('div', { className: 'member' }, _react2.default.createElement('img', { className: 'head', src: o.head }), _react2.default.createElement('p', { className: 'nickname' }, o.nickname));
 		}
 
-		return _react2.default.createElement('div', { className: 'message-title' }, _react2.default.createElement('p', { className: 'title', onClick: this.clickHandler }, msgTitle), _react2.default.createElement('div', { className: 'members', ref: 'members' }, members));
+		return _react2.default.createElement('div', { className: 'message-title' }, _react2.default.createElement('div', { ref: 'menu', className: 'menu none', onClick: this.menuHandler }, _react2.default.createElement('i', { className: 'icon-menu' })), _react2.default.createElement('p', { className: 'title', onClick: this.clickHandler }, msgTitle), _react2.default.createElement('div', { className: 'members', ref: 'members' }, members));
 	},
 	componentDidMount: function componentDidMount() {
 		var _this = this;
@@ -21651,6 +21652,10 @@ exports.default = _react2.default.createClass({
 	},
 	clickHandler: function clickHandler() {
 		this.refs.members.classList.toggle('open');
+	},
+	menuHandler: function menuHandler(e) {
+		this.refs.menu.classList.toggle('show');
+		document.querySelector('.left').classList.toggle('show');
 	}
 });
 

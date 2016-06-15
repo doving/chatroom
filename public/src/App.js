@@ -51,11 +51,13 @@ const App =  React.createClass({
 			});
 
 			socket.on('chat', obj => {
-				const { myself, list } = this.props.user;
+				const { user } = this.props;
+
+				const { myself, list } = user;
 
 				let o =list.find(u => u.id === obj.id);
 
-				this.props.user.isLogin && dispatch(actions.receiveMsg(obj, myself.id));
+				user.isLogin && dispatch(actions.receiveMsg(obj, myself.id));
 
 				document.hidden && Notification && Notification.requestPermission(permission => {
 					if(permission == 'granted'){
@@ -63,7 +65,8 @@ const App =  React.createClass({
 							obj.target == 'HALL' ? `大厅-${o.nickname}` : o.nickname ,
 							{
 								icon: o.head,
-								body: obj.content
+								body: obj.content,
+								tag: obj.target
 							});
 
 						notification.addEventListener('click', e => {

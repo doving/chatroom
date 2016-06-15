@@ -35,6 +35,9 @@ export default React.createClass({
 
 		return (
 			<div className='message-title'>
+				<div ref='menu' className='menu none' onClick={this.menuHandler}>
+					<i className='icon-menu'></i>
+				</div>
 				<p className='title' onClick={this.clickHandler}>{msgTitle}</p>
 				<div className='members' ref='members'>{members}</div>
 			</div>
@@ -51,5 +54,10 @@ export default React.createClass({
 
 	clickHandler() {
 		this.refs.members.classList.toggle('open');
+	},
+
+	menuHandler(e) {
+		this.refs.menu.classList.toggle('show');
+		document.querySelector('.left').classList.toggle('show');
 	}
 });
