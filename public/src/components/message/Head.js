@@ -51,7 +51,7 @@ export default React.createClass({
 			}
 		});
 
-		this.refs.menu.addEventListener(this.refs.menu.ontouchstart ? 'touchstart' : 'click', this.menuHandler)
+		this.refs.menu.addEventListener('ontouchstart' in this.refs.menu ? 'touchstart' : 'click', this.menuHandler)
 		
 	},
 
