@@ -27,7 +27,7 @@ const App =  React.createClass({
 		)
 	},
 
-	componentWillMount() {
+	componentDidMount() {
 		const { dispatch } = this.props;
 
 		let socket = io();

@@ -21180,7 +21180,7 @@ var App = _react2.default.createClass({
 
 		return _react2.default.createElement('div', null, _react2.default.createElement(_HeartDialog2.default, { favor: send.favor, dispatch: dispatch }), this.props.user.isLogin ? _react2.default.createElement('div', { className: 'main' }, _react2.default.createElement(_user2.default, { user: user, message: message, dispatch: dispatch }), _react2.default.createElement(_message2.default, { dispatch: dispatch, user: user, message: message, send: send })) : _react2.default.createElement(_Login2.default, { dispatch: dispatch, socket: user.socket, defaultHead: user.defaultHead }));
 	},
-	componentWillMount: function componentWillMount() {
+	componentDidMount: function componentDidMount() {
 		var _this = this;
 
 		var dispatch = this.props.dispatch;
