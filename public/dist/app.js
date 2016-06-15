@@ -21842,6 +21842,8 @@ exports.default = _react2.default.createClass({
 				_this.refs.heartBox.classList.add('none');
 			}
 		});
+
+		this.refs.input.focus();
 	},
 	heartItemClickHandler: function heartItemClickHandler(e) {
 		var _props = this.props;

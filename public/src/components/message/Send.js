@@ -54,6 +54,8 @@ export default React.createClass({
 				this.refs.heartBox.classList.add('none');
 			}
 		});
+
+		this.refs.input.focus();
 	},
 
 	heartItemClickHandler(e) {
