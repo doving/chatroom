@@ -21165,7 +21165,9 @@ var _actions = require('./actions');
 
 var _actions2 = _interopRequireDefault(_actions);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 var App = _react2.default.createClass({
 	displayName: 'App',
@@ -21176,24 +21178,12 @@ var App = _react2.default.createClass({
 		var send = _props.send;
 		var dispatch = _props.dispatch;
 
-
-		return _react2.default.createElement(
-			'div',
-			null,
-			_react2.default.createElement(_HeartDialog2.default, { favor: send.favor, dispatch: dispatch }),
-			this.props.user.isLogin ? _react2.default.createElement(
-				'div',
-				{ className: 'main' },
-				_react2.default.createElement(_user2.default, { user: user, message: message, dispatch: dispatch }),
-				_react2.default.createElement(_message2.default, { dispatch: dispatch, user: user, message: message, send: send })
-			) : _react2.default.createElement(_Login2.default, { dispatch: dispatch, socket: user.socket, defaultHead: user.defaultHead })
-		);
+		return _react2.default.createElement('div', null, _react2.default.createElement(_HeartDialog2.default, { favor: send.favor, dispatch: dispatch }), this.props.user.isLogin ? _react2.default.createElement('div', { className: 'main' }, _react2.default.createElement(_user2.default, { user: user, message: message, dispatch: dispatch }), _react2.default.createElement(_message2.default, { dispatch: dispatch, user: user, message: message, send: send })) : _react2.default.createElement(_Login2.default, { dispatch: dispatch, socket: user.socket, defaultHead: user.defaultHead }));
 	},
 	componentWillMount: function componentWillMount() {
 		var _this = this;
 
 		var dispatch = this.props.dispatch;
-
 
 		var socket = io();
 
@@ -21207,15 +21197,20 @@ var App = _react2.default.createClass({
 				return dispatch(_actions2.default.userJoin(user, true));
 			});
 
-			socket.on('userJoin', function (user) {
-				return _this.props.user.isLogin && dispatch(_actions2.default.userJoin(user));
+			socket.on('userJoin', function (userObj) {
+				var user = _this.props.user;
+
+				if (user.isLogin) {
+					dispatch(_actions2.default.userJoin(userObj));
+
+					_this.showTip(userObj.nickname + ' 加入群聊');
+				}
 			});
 
 			socket.on('chat', function (obj) {
 				var _props$user = _this.props.user;
 				var myself = _props$user.myself;
 				var list = _props$user.list;
-
 
 				var o = list.find(function (u) {
 					return u.id === obj.id;
@@ -21239,20 +21234,35 @@ var App = _react2.default.createClass({
 						})();
 					}
 				});
-
-				Notification.onclick = function (e) {
-					console.log('e:', e);
-				};
 			});
 
 			socket.on('userOut', function (id) {
-				_this.props.user.isLogin && dispatch(_actions2.default.userOut(id));
+				var user = _this.props.user;
+
+				user.isLogin && dispatch(_actions2.default.userOut(id));
+
 				id === _this.props.message.currentId && dispatch(_actions2.default.changeCurrentId('HALL'));
+
+				_this.showTip(user.list.find(function (u) {
+					return u.id == id;
+				}).nickname + ' 退出群聊');
 			});
 		});
 
 		/*document.addEventListener('visibilitychange', e => {
   		});*/
+	},
+	showTip: function showTip(content) {
+		var _props2 = this.props;
+		var dispatch = _props2.dispatch;
+		var user = _props2.user;
+
+		dispatch(_actions2.default.receiveMsg({
+			type: 'tip',
+			content: content,
+			id: user.myself.id,
+			target: 'HALL'
+		}));
 	}
 });
 
@@ -21281,7 +21291,9 @@ var _sendAction = require('./sendAction');
 
 var _sendAction2 = _interopRequireDefault(_sendAction);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 exports.default = Object.freeze(Object.assign({}, _userAction2.default, _messageAction2.default, _sendAction2.default));
 
@@ -21296,7 +21308,9 @@ var _ACTIONTYPE = require('../config/ACTIONTYPE');
 
 var _ACTIONTYPE2 = _interopRequireDefault(_ACTIONTYPE);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 exports.default = {
 	receiveMsg: function receiveMsg(msgObj, myselfId) {
@@ -21324,7 +21338,9 @@ var _ACTIONTYPE = require('../config/ACTIONTYPE');
 
 var _ACTIONTYPE2 = _interopRequireDefault(_ACTIONTYPE);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 exports.default = {
 	changeFavor: function changeFavor(favor) {
@@ -21346,7 +21362,9 @@ var _ACTIONTYPE = require('../config/ACTIONTYPE');
 
 var _ACTIONTYPE2 = _interopRequireDefault(_ACTIONTYPE);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 exports.default = {
 	initSocket: function initSocket() {
@@ -21399,9 +21417,19 @@ var _isOutSide = require('../util/isOutSide');
 
 var _isOutSide2 = _interopRequireDefault(_isOutSide);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _toConsumableArray(arr) {
+	if (Array.isArray(arr)) {
+		for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+			arr2[i] = arr[i];
+		}return arr2;
+	} else {
+		return Array.from(arr);
+	}
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'HeartDialog',
@@ -21414,12 +21442,7 @@ exports.default = _react2.default.createClass({
 	render: function render() {
 		var hearted = this.state.hearted;
 
-		return _react2.default.createElement(
-			'div',
-			{ ref: 'heartDialog', className: 'heart-dialog none' + (hearted ? ' hearted' : ''), onClick: this.heartClick },
-			hearted ? '该图已收藏' : '收藏图片',
-			_react2.default.createElement('i', { className: 'icon-heart' })
-		);
+		return _react2.default.createElement('div', { ref: 'heartDialog', className: 'heart-dialog none' + (hearted ? ' hearted' : ''), onClick: this.heartClick }, hearted ? '该图已收藏' : '收藏图片', _react2.default.createElement('i', { className: 'icon-heart' }));
 	},
 	componentDidMount: function componentDidMount() {
 		var _this = this;
@@ -21462,7 +21485,6 @@ exports.default = _react2.default.createClass({
 		var favor = _props.favor;
 		var dispatch = _props.dispatch;
 
-
 		favor = [].concat(_toConsumableArray(favor || []));
 
 		favor.push(this.state.current);
@@ -21488,7 +21510,9 @@ var _actions = require('../../actions');
 
 var _actions2 = _interopRequireDefault(_actions);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'Login',
@@ -21505,29 +21529,10 @@ exports.default = _react2.default.createClass({
 
 		var isLogin = this.props.isLogin;
 
-		return _react2.default.createElement(
-			'div',
-			{ className: isLogin ? 'none' : 'login' },
-			_react2.default.createElement(
-				'div',
-				{ className: 'upload' },
-				_react2.default.createElement('input', { className: 'none', ref: 'upload', type: 'file', accept: 'image/*;capture=camera', onChange: this.uploadHandler }),
-				_react2.default.createElement('img', { className: 'head', src: this.state.head, onClick: function onClick(e) {
-						return _this.refs.upload.click();
-					}, title: '上传头像' })
-			),
-			_react2.default.createElement(
-				'div',
-				{ className: 'shade-input' },
-				_react2.default.createElement('input', { ref: 'nickname', className: 'inputname' + (this.state.conflict ? ' conflict' : ''),
-					maxLength: '20', placeholder: this.state.placeholder, onKeyDown: this.keyDownHandler }),
-				_react2.default.createElement(
-					'button',
-					{ className: 'confirm', onClick: this.loginHandler },
-					'确定'
-				)
-			)
-		);
+		return _react2.default.createElement('div', { className: isLogin ? 'none' : 'login' }, _react2.default.createElement('div', { className: 'upload' }, _react2.default.createElement('input', { className: 'none', ref: 'upload', type: 'file', accept: 'image/*;capture=camera', onChange: this.uploadHandler }), _react2.default.createElement('img', { className: 'head', src: this.state.head, onClick: function onClick(e) {
+				return _this.refs.upload.click();
+			}, title: '上传头像' })), _react2.default.createElement('div', { className: 'shade-input' }, _react2.default.createElement('input', { ref: 'nickname', className: 'inputname' + (this.state.conflict ? ' conflict' : ''),
+			maxLength: '20', placeholder: this.state.placeholder, onKeyDown: this.keyDownHandler }), _react2.default.createElement('button', { className: 'confirm', onClick: this.loginHandler }, '确定')));
 	},
 	componentDidUpdate: function componentDidUpdate() {
 		var _this2 = this;
@@ -21591,9 +21596,19 @@ var _isOutside = require('../../util/isOutside');
 
 var _isOutside2 = _interopRequireDefault(_isOutside);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _toConsumableArray(arr) {
+	if (Array.isArray(arr)) {
+		for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+			arr2[i] = arr[i];
+		}return arr2;
+	} else {
+		return Array.from(arr);
+	}
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'Head',
@@ -21607,7 +21622,6 @@ exports.default = _react2.default.createClass({
 		var user = _props.user;
 		var currentId = _props.currentId;
 
-
 		var currentIndex = user.list.findIndex(function (o) {
 			return o.id == currentId;
 		});
@@ -21617,45 +21631,14 @@ exports.default = _react2.default.createClass({
 
 		if (currentId == 'HALL') {
 			[user.myself].concat(_toConsumableArray(user.list)).forEach(function (o, i) {
-				o.active && members.push(_react2.default.createElement(
-					'div',
-					{ key: i, className: 'member' },
-					_react2.default.createElement('img', { className: 'head', src: o.head }),
-					_react2.default.createElement(
-						'p',
-						{ className: 'nickname' },
-						o.nickname
-					)
-				));
+				o.active && members.push(_react2.default.createElement('div', { key: i, className: 'member' }, _react2.default.createElement('img', { className: 'head', src: o.head }), _react2.default.createElement('p', { className: 'nickname' }, o.nickname)));
 			});
 		} else {
 			var o = user.list[currentIndex];
-			members = _react2.default.createElement(
-				'div',
-				{ className: 'member' },
-				_react2.default.createElement('img', { className: 'head', src: o.head }),
-				_react2.default.createElement(
-					'p',
-					{ className: 'nickname' },
-					o.nickname
-				)
-			);
+			members = _react2.default.createElement('div', { className: 'member' }, _react2.default.createElement('img', { className: 'head', src: o.head }), _react2.default.createElement('p', { className: 'nickname' }, o.nickname));
 		}
 
-		return _react2.default.createElement(
-			'div',
-			{ className: 'message-title' },
-			_react2.default.createElement(
-				'p',
-				{ className: 'title', onClick: this.clickHandler },
-				msgTitle
-			),
-			_react2.default.createElement(
-				'div',
-				{ className: 'members', ref: 'members' },
-				members
-			)
-		);
+		return _react2.default.createElement('div', { className: 'message-title' }, _react2.default.createElement('p', { className: 'title', onClick: this.clickHandler }, msgTitle), _react2.default.createElement('div', { className: 'members', ref: 'members' }, members));
 	},
 	componentDidMount: function componentDidMount() {
 		var _this = this;
@@ -22087,7 +22070,9 @@ var _Send = require('./Send');
 
 var _Send2 = _interopRequireDefault(_Send);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'message',
@@ -22098,14 +22083,7 @@ exports.default = _react2.default.createClass({
 		var send = _props.send;
 		var dispatch = _props.dispatch;
 
-
-		return _react2.default.createElement(
-			'div',
-			{ className: 'right' },
-			_react2.default.createElement(_Head2.default, { user: user, currentId: message.currentId }),
-			_react2.default.createElement(_Message2.default, { user: user, message: message, dispatch: dispatch }),
-			_react2.default.createElement(_Send2.default, { dispatch: dispatch, send: send, currentId: message.currentId, socket: user.socket, myself: user.myself })
-		);
+		return _react2.default.createElement('div', { className: 'right' }, _react2.default.createElement(_Head2.default, { user: user, currentId: message.currentId }), _react2.default.createElement(_Message2.default, { user: user, message: message, dispatch: dispatch }), _react2.default.createElement(_Send2.default, { dispatch: dispatch, send: send, currentId: message.currentId, socket: user.socket, myself: user.myself }));
 	}
 });
 
@@ -22120,7 +22098,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'MyselfInfo',
@@ -22131,21 +22111,7 @@ exports.default = _react2.default.createClass({
 		var nickname = myself.nickname;
 		var head = myself.head;
 
-
-		return _react2.default.createElement(
-			'div',
-			{ className: 'myself-info' },
-			_react2.default.createElement(
-				'div',
-				{ className: 'info' },
-				_react2.default.createElement('img', { className: 'head', src: head || defaultHead }),
-				_react2.default.createElement(
-					'span',
-					{ className: 'name' },
-					nickname
-				)
-			)
-		);
+		return _react2.default.createElement('div', { className: 'myself-info' }, _react2.default.createElement('div', { className: 'info' }, _react2.default.createElement('img', { className: 'head', src: head || defaultHead }), _react2.default.createElement('span', { className: 'name' }, nickname)));
 	}
 });
 
@@ -22164,7 +22130,9 @@ var _actions = require('../../actions');
 
 var _actions2 = _interopRequireDefault(_actions);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'UserList',
@@ -22179,7 +22147,6 @@ exports.default = _react2.default.createClass({
 		var defaultHead = user.defaultHead;
 		var currentId = message.currentId;
 
-
 		var heads = [_react2.default.createElement('img', { key: '0', className: 'hall-head', src: myself.head })];
 		var users = [];
 
@@ -22192,19 +22159,9 @@ exports.default = _react2.default.createClass({
 
 			var newCount = (message.list[item.id] || { news: [] }).news.length;
 
-			users.push(_react2.default.createElement(
-				'li',
-				{ className: cls, key: index, onClick: function onClick() {
-						return _this.clickHandler(item.id);
-					} },
-				_react2.default.createElement('img', { className: 'head', src: item.head || defaultHead }),
-				item.nickname,
-				newCount > 0 ? _react2.default.createElement(
-					'span',
-					{ className: 'news-count' },
-					newCount
-				) : ''
-			));
+			users.push(_react2.default.createElement('li', { className: cls, key: index, onClick: function onClick() {
+					return _this.clickHandler(item.id);
+				} }, _react2.default.createElement('img', { className: 'head', src: item.head || defaultHead }), item.nickname, newCount > 0 ? _react2.default.createElement('span', { className: 'news-count' }, newCount) : ''));
 
 			if (count < 9) {
 				heads.push(_react2.default.createElement('img', { key: count, className: 'hall-head', src: item.head || defaultHead }));
@@ -22218,34 +22175,9 @@ exports.default = _react2.default.createClass({
 
 		var hallNewCount = (message.list['HALL'] || { news: [] }).news.length;
 
-		return _react2.default.createElement(
-			'div',
-			{ className: 'users' },
-			_react2.default.createElement(
-				'ul',
-				{ className: 'userlist' },
-				_react2.default.createElement(
-					'li',
-					{ className: hallClass, onClick: function onClick() {
-							return _this.clickHandler('HALL');
-						} },
-					_react2.default.createElement(
-						'div',
-						{ className: 'head ' + headClass },
-						heads
-					),
-					'大厅（',
-					count,
-					'）',
-					hallNewCount > 0 ? _react2.default.createElement(
-						'span',
-						{ className: 'news-count' },
-						hallNewCount
-					) : ''
-				),
-				users
-			)
-		);
+		return _react2.default.createElement('div', { className: 'users' }, _react2.default.createElement('ul', { className: 'userlist' }, _react2.default.createElement('li', { className: hallClass, onClick: function onClick() {
+				return _this.clickHandler('HALL');
+			} }, _react2.default.createElement('div', { className: 'head ' + headClass }, heads), '大厅（', count, '）', hallNewCount > 0 ? _react2.default.createElement('span', { className: 'news-count' }, hallNewCount) : ''), users));
 	},
 	clickHandler: function clickHandler(id) {
 		this.props.dispatch(_actions2.default.changeCurrentId(id));
@@ -22271,7 +22203,9 @@ var _UserList = require('./UserList');
 
 var _UserList2 = _interopRequireDefault(_UserList);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'user',
@@ -22284,13 +22218,7 @@ exports.default = _react2.default.createClass({
 		var list = user.list;
 		var defaultHead = user.defaultHead;
 
-
-		return _react2.default.createElement(
-			'div',
-			{ className: 'left' },
-			_react2.default.createElement(_MyselfInfo2.default, { myself: myself, defaultHead: defaultHead }),
-			_react2.default.createElement(_UserList2.default, { user: user, message: message, dispatch: dispatch })
-		);
+		return _react2.default.createElement('div', { className: 'left' }, _react2.default.createElement(_MyselfInfo2.default, { myself: myself, defaultHead: defaultHead }), _react2.default.createElement(_UserList2.default, { user: user, message: message, dispatch: dispatch }));
 	}
 });
 
@@ -22390,16 +22318,14 @@ var _App = require('./App');
 
 var _App2 = _interopRequireDefault(_App);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 var store = (0, _redux.createStore)(_reducers2.default, _INITSTATE2.default);
 
 window.getState = store.getState;
-(0, _reactDom.render)(_react2.default.createElement(
-	_reactRedux.Provider,
-	{ store: store },
-	_react2.default.createElement(_App2.default, null)
-), document.querySelector('#container'));
+(0, _reactDom.render)(_react2.default.createElement(_reactRedux.Provider, { store: store }, _react2.default.createElement(_App2.default, null)), document.querySelector('#container'));
 
 },{"./App":194,"./config/INITSTATE":209,"./reducers":211,"react":180,"react-dom":30,"react-redux":33,"redux":186}],211:[function(require,module,exports){
 'use strict';

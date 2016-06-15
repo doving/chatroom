@@ -40,7 +40,15 @@ const App =  React.createClass({
 
 			socket.on('logined', user => dispatch(actions.userJoin(user, true)));
 
-			socket.on('userJoin', user => this.props.user.isLogin && dispatch(actions.userJoin(user)));
+			socket.on('userJoin', userObj => {
+				const { user } = this.props;
+
+				if(user.isLogin){
+					dispatch(actions.userJoin(userObj));
+
+					this.showTip(`${userObj.nickname} 加入群聊`);
+				}
+			});
 
 			socket.on('chat', obj => {
 				const { myself, list } = this.props.user;
@@ -65,21 +73,33 @@ const App =  React.createClass({
 						});
 					}
 				});
-
-				Notification.onclick = e => {
-					console.log('e:', e);
-				};
 			});
 
 			socket.on('userOut', id => {
-				this.props.user.isLogin && dispatch(actions.userOut(id));
+				const { user } = this.props;
+
+				user.isLogin && dispatch(actions.userOut(id));
+
 				id === this.props.message.currentId && dispatch(actions.changeCurrentId('HALL'));
+
+				this.showTip(`${user.list.find(u => u.id == id).nickname} 退出群聊`);
 			});
 		})
 
 		/*document.addEventListener('visibilitychange', e => {
 
 		});*/
+	},
+
+	showTip(content) {
+		const { dispatch, user } = this.props;
+
+		dispatch(actions.receiveMsg({
+			type: 'tip',
+			content: content,
+			id: user.myself.id,
+			target: 'HALL'
+		}));
 	}
 
 });
