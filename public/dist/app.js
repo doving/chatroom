@@ -21639,7 +21639,7 @@ exports.default = _react2.default.createClass({
 			members = _react2.default.createElement('div', { className: 'member' }, _react2.default.createElement('img', { className: 'head', src: o.head }), _react2.default.createElement('p', { className: 'nickname' }, o.nickname));
 		}
 
-		return _react2.default.createElement('div', { className: 'message-title' }, _react2.default.createElement('div', { ref: 'menu', className: 'menu none', onClick: this.menuHandler }, _react2.default.createElement('i', { className: 'icon-menu' })), _react2.default.createElement('p', { className: 'title', onClick: this.clickHandler }, msgTitle), _react2.default.createElement('div', { className: 'members', ref: 'members' }, members));
+		return _react2.default.createElement('div', { className: 'message-title' }, _react2.default.createElement('div', { ref: 'menu', className: 'menu none' }, _react2.default.createElement('i', { className: 'icon-menu' })), _react2.default.createElement('p', { className: 'title', onClick: this.clickHandler }, msgTitle), _react2.default.createElement('div', { className: 'members', ref: 'members' }, members));
 	},
 	componentDidMount: function componentDidMount() {
 		var _this = this;
@@ -21649,6 +21649,8 @@ exports.default = _react2.default.createClass({
 				_this.refs.members.classList.remove('open');
 			}
 		});
+
+		this.refs.menu.addEventListener(this.refs.menu.ontouchstart ? 'touchstart' : 'click', this.menuHandler);
 	},
 	clickHandler: function clickHandler() {
 		this.refs.members.classList.toggle('open');
