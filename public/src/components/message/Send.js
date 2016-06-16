@@ -58,6 +58,8 @@ export default React.createClass({
 		this.refs.input.focus();
 	},
 
+	shouldComponentUpdate(){ return false; },
+
 	heartItemClickHandler(e) {
 		const { send, dispatch } = this.props;
 
@@ -251,13 +253,15 @@ export default React.createClass({
 		let input = this.refs.input;
 		let msg = input.innerHTML.trim();
 
+		input.focus();
+
         if(msg){
             //util.compress(msg, function(str){
                 socket.emit('chat', {
                 	to: currentId,
                 	msg
                 });
-                //input.innerHTML = '\t';
+                input.innerHTML = '\t';
             //});
         }
 	}

@@ -21948,6 +21948,9 @@ exports.default = _react2.default.createClass({
 
 		this.refs.input.focus();
 	},
+	shouldComponentUpdate: function shouldComponentUpdate() {
+		return false;
+	},
 	heartItemClickHandler: function heartItemClickHandler(e) {
 		var _props = this.props;
 		var send = _props.send;
@@ -22145,13 +22148,15 @@ exports.default = _react2.default.createClass({
 		var input = this.refs.input;
 		var msg = input.innerHTML.trim();
 
+		input.focus();
+
 		if (msg) {
 			//util.compress(msg, function(str){
 			socket.emit('chat', {
 				to: currentId,
 				msg: msg
 			});
-			//input.innerHTML = '\t';
+			input.innerHTML = '\t';
 			//});
 		}
 	}
