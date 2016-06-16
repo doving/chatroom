@@ -22156,7 +22156,7 @@ exports.default = _react2.default.createClass({
 				to: currentId,
 				msg: msg
 			});
-			input.innerHTML = '\t';
+			input.innerHTML = '0';
 			//});
 		}
 	}
