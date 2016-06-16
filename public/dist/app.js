@@ -21663,17 +21663,18 @@ exports.default = _react2.default.createClass({
 	componentDidMount: function componentDidMount() {
 		var _this = this;
 
-		document.addEventListener('click', function (e) {
+		var touchable = 'ontouchstart' in document.body;
+
+		document.addEventListener(touchable ? 'touchstart' : 'click', function (e) {
 			if ((0, _isOutside2.default)(e.pageX, e.pageY, _this.refs.members.getBoundingClientRect())) {
 				_this.refs.members.classList.remove('open');
 			}
 		});
 
-		this.refs.menu.addEventListener('ontouchstart' in this.refs.menu ? 'touchstart' : 'click', this.menuHandler);
-		this.refs.title.addEventListener('ontouchend' in this.refs.title ? 'touchend' : 'click', this.clickHandler);
+		this.refs.menu.addEventListener(touchable ? 'touchstart' : 'click', this.menuHandler);
+		this.refs.title.addEventListener(touchable ? 'touchend' : 'click', this.clickHandler);
 	},
 	clickHandler: function clickHandler(e) {
-		console.log(e.target);
 		e.target.className == 'title' && this.refs.members.classList.toggle('open');
 	},
 	menuHandler: function menuHandler(e) {

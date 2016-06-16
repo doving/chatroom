@@ -45,18 +45,19 @@ export default React.createClass({
 	},
 
 	componentDidMount() {
-		document.addEventListener('click', e => {
+		let touchable = 'ontouchstart' in document.body;
+
+		document.addEventListener(touchable ? 'touchstart' : 'click', e => {
 			if(isOutside(e.pageX, e.pageY, this.refs.members.getBoundingClientRect())){
 				this.refs.members.classList.remove('open');
 			}
 		});
 
-		this.refs.menu.addEventListener('ontouchstart' in this.refs.menu ? 'touchstart' : 'click', this.menuHandler)
-		this.refs.title.addEventListener('ontouchend' in this.refs.title ? 'touchend' : 'click', this.clickHandler)
+		this.refs.menu.addEventListener(touchable ? 'touchstart' : 'click', this.menuHandler)
+		this.refs.title.addEventListener(touchable ? 'touchend' : 'click', this.clickHandler)
 	},
 
 	clickHandler(e) {
-		console.log(e.target);
 		e.target.className == 'title' && this.refs.members.classList.toggle('open');
 	},
 
