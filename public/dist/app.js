@@ -22112,6 +22112,7 @@ exports.default = _react2.default.createClass({
 			input.innerHTML = '';
 			//});
 		}
+		this.refs.input.focus();
 	}
 });
 

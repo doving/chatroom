@@ -260,5 +260,6 @@ export default React.createClass({
                 input.innerHTML = '';
             //});
         }
+        this.refs.input.focus();
 	}
 });
