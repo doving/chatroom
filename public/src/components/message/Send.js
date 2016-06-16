@@ -257,7 +257,7 @@ export default React.createClass({
                 	to: currentId,
                 	msg
                 });
-                input.innerHTML = '\t';
+                //input.innerHTML = '\t';
             //});
         }
 	}

@@ -21898,9 +21898,19 @@ var _actions = require('../../actions');
 
 var _actions2 = _interopRequireDefault(_actions);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _toConsumableArray(arr) {
+	if (Array.isArray(arr)) {
+		for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+			arr2[i] = arr[i];
+		}return arr2;
+	} else {
+		return Array.from(arr);
+	}
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'Send',
@@ -21914,58 +21924,12 @@ exports.default = _react2.default.createClass({
 
 		var favor = send.favor || [];
 
-		return _react2.default.createElement(
-			'div',
-			{ className: 'footer' },
-			_react2.default.createElement(
-				'div',
-				{ className: 'tools' },
-				_react2.default.createElement(
-					'form',
-					{ ref: 'uploadForm', className: 'upload-form' },
-					_react2.default.createElement('input', { className: 'upload', ref: 'upload', type: 'file',
-						accept: 'image/*;capture=camera', onChange: this.uploadHandler })
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'tool send-img', title: '发送图片', onClick: this.clickImgHandler },
-					_react2.default.createElement('i', { className: 'icon-picture' })
-				),
-				_react2.default.createElement(
-					'div',
-					{ ref: 'heart', className: 'tool heart', title: '我的收藏', onClick: this.heartClickHandler },
-					_react2.default.createElement('i', { className: 'icon-heart' })
-				),
-				_react2.default.createElement(
-					'div',
-					{ ref: 'heartBox', className: 'heart-pics none' },
-					_react2.default.createElement(
-						'div',
-						{ className: 'pics-box', onClick: this.heartItemClickHandler },
-						favor.map(function (url, i) {
-							return _react2.default.createElement(
-								'div',
-								{ key: i, className: 'heart-item' },
-								_react2.default.createElement(
-									'div',
-									{ className: 'del-img', title: '删除' },
-									'×'
-								),
-								_react2.default.createElement('img', { className: 'heart-img', src: url })
-							);
-						})
-					)
-				)
-			),
-			_react2.default.createElement('section', { className: 'input', ref: 'input', contentEditable: 'true',
-				onInput: this.inputHandler, onDrop: this.dropHandler,
-				onPaste: this.pasteHandler, onKeyDown: this.keydownHandler }),
-			_react2.default.createElement(
-				'button',
-				{ className: 'send', onClick: this.sendHandler },
-				'发送'
-			)
-		);
+		return _react2.default.createElement('div', { className: 'footer' }, _react2.default.createElement('div', { className: 'tools' }, _react2.default.createElement('form', { ref: 'uploadForm', className: 'upload-form' }, _react2.default.createElement('input', { className: 'upload', ref: 'upload', type: 'file',
+			accept: 'image/*;capture=camera', onChange: this.uploadHandler })), _react2.default.createElement('div', { className: 'tool send-img', title: '发送图片', onClick: this.clickImgHandler }, _react2.default.createElement('i', { className: 'icon-picture' })), _react2.default.createElement('div', { ref: 'heart', className: 'tool heart', title: '我的收藏', onClick: this.heartClickHandler }, _react2.default.createElement('i', { className: 'icon-heart' })), _react2.default.createElement('div', { ref: 'heartBox', className: 'heart-pics none' }, _react2.default.createElement('div', { className: 'pics-box', onClick: this.heartItemClickHandler }, favor.map(function (url, i) {
+			return _react2.default.createElement('div', { key: i, className: 'heart-item' }, _react2.default.createElement('div', { className: 'del-img', title: '删除' }, '×'), _react2.default.createElement('img', { className: 'heart-img', src: url }));
+		})))), _react2.default.createElement('section', { className: 'input', ref: 'input', contentEditable: 'true',
+			onInput: this.inputHandler, onDrop: this.dropHandler,
+			onPaste: this.pasteHandler, onKeyDown: this.keydownHandler }), _react2.default.createElement('button', { className: 'send', onClick: this.sendHandler }, '发送'));
 	},
 	componentDidMount: function componentDidMount() {
 		var _this = this;
@@ -21973,7 +21937,6 @@ exports.default = _react2.default.createClass({
 		document.addEventListener('click', function (e) {
 			var x = e.clientX;
 			var y = e.clientY;
-
 
 			var heartO = _this.refs.heart.getBoundingClientRect();
 			var heartBoxO = _this.refs.heartBox.getBoundingClientRect();
@@ -21989,7 +21952,6 @@ exports.default = _react2.default.createClass({
 		var _props = this.props;
 		var send = _props.send;
 		var dispatch = _props.dispatch;
-
 
 		var favor = [].concat(_toConsumableArray(send.favor || []));
 
@@ -22063,7 +22025,6 @@ exports.default = _react2.default.createClass({
 		var myself = _props2.myself;
 		var currentId = _props2.currentId;
 
-
 		var img = e.target.files[0];
 
 		if (!img) return;
@@ -22099,7 +22060,6 @@ exports.default = _react2.default.createClass({
 		var dispatch = _props3.dispatch;
 		var myself = _props3.myself;
 		var currentId = _props3.currentId;
-
 
 		if (img && /^image\/[a-z]+$/.test(img.type)) {
 			if (img.size <= 0) return;
@@ -22182,7 +22142,6 @@ exports.default = _react2.default.createClass({
 		var socket = _props4.socket;
 		var currentId = _props4.currentId;
 
-
 		var input = this.refs.input;
 		var msg = input.innerHTML.trim();
 
@@ -22192,7 +22151,7 @@ exports.default = _react2.default.createClass({
 				to: currentId,
 				msg: msg
 			});
-			input.innerHTML = '\t';
+			//input.innerHTML = '\t';
 			//});
 		}
 	}
