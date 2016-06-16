@@ -88,6 +88,8 @@ export default React.createClass({
 	componentDidUpdate() {
 		let last = this.refs.chatbox.lastElementChild;
 		last && last.scrollIntoView(false);
+
+		document.querySelector('.input').focus();
 	},
 
 	timeformat(nums) {

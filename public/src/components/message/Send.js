@@ -253,8 +253,6 @@ export default React.createClass({
 		let input = this.refs.input;
 		let msg = input.innerHTML.trim();
 
-		setTimeout(() => input.focus(), 50);
-
         if(msg){
             //util.compress(msg, function(str){
                 socket.emit('chat', {

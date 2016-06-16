@@ -21732,7 +21732,9 @@ var _isOutSide = require('../../util/isOutSide');
 
 var _isOutSide2 = _interopRequireDefault(_isOutSide);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'Message',
@@ -21750,74 +21752,24 @@ exports.default = _react2.default.createClass({
 		var msgList = list[currentId] && list[currentId].msg;
 		msgList = msgList || [];
 
-		return _react2.default.createElement(
-			'div',
-			{ ref: 'message', className: 'message', onContextMenu: this.contextMenu },
-			_react2.default.createElement(
-				'p',
-				{ ref: 'clear', className: 'clear none', onClick: this.clearHandler },
-				'清屏'
-			),
-			_react2.default.createElement(
-				'ul',
-				{ className: 'chatbox', ref: 'chatbox' },
-				msgList.map(function (msg, index) {
-					var userObj = msg.id === myself.id ? myself : user.list.find(function (o) {
-						return o.id == msg.id;
-					});
-					var cls = void 0,
-					    isMyself = msg.id === myself.id;
+		return _react2.default.createElement('div', { ref: 'message', className: 'message', onContextMenu: this.contextMenu }, _react2.default.createElement('p', { ref: 'clear', className: 'clear none', onClick: this.clearHandler }, '清屏'), _react2.default.createElement('ul', { className: 'chatbox', ref: 'chatbox' }, msgList.map(function (msg, index) {
+			var userObj = msg.id === myself.id ? myself : user.list.find(function (o) {
+				return o.id == msg.id;
+			});
+			var cls = void 0,
+			    isMyself = msg.id === myself.id;
 
-					switch (msg.type) {
-						case 'msg':
-							var username = isMyself ? _react2.default.createElement(
-								'p',
-								{ className: 'username' },
-								_react2.default.createElement(
-									'span',
-									{ className: 'time' },
-									'(',
-									_this.timeformat(msg.time),
-									')'
-								),
-								userObj.nickname
-							) : _react2.default.createElement(
-								'p',
-								{ className: 'username' },
-								userObj.nickname,
-								_react2.default.createElement(
-									'span',
-									{ className: 'time' },
-									'(',
-									_this.timeformat(msg.time),
-									')'
-								)
-							);
-							cls = isMyself ? 'myself' : 'other';
-							return _react2.default.createElement(
-								'li',
-								{ key: index, className: 'chatitem ' + cls },
-								_react2.default.createElement('img', { className: 'head', src: userObj.head }),
-								username,
-								_react2.default.createElement('p', { style: { clear: 'both' } }),
-								_react2.default.createElement('p', { className: 'msg', dangerouslySetInnerHTML: { __html: msg.content } })
-							);
-						case 'warning':
-						case 'tip':
-							return _react2.default.createElement(
-								'li',
-								{ key: index, className: 'chatitem msgitem' },
-								_react2.default.createElement(
-									'p',
-									{ className: 'msgcontent ' + msg.type },
-									msg.content
-								)
-							);
+			switch (msg.type) {
+				case 'msg':
+					var username = isMyself ? _react2.default.createElement('p', { className: 'username' }, _react2.default.createElement('span', { className: 'time' }, '(', _this.timeformat(msg.time), ')'), userObj.nickname) : _react2.default.createElement('p', { className: 'username' }, userObj.nickname, _react2.default.createElement('span', { className: 'time' }, '(', _this.timeformat(msg.time), ')'));
+					cls = isMyself ? 'myself' : 'other';
+					return _react2.default.createElement('li', { key: index, className: 'chatitem ' + cls }, _react2.default.createElement('img', { className: 'head', src: userObj.head }), username, _react2.default.createElement('p', { style: { clear: 'both' } }), _react2.default.createElement('p', { className: 'msg', dangerouslySetInnerHTML: { __html: msg.content } }));
+				case 'warning':
+				case 'tip':
+					return _react2.default.createElement('li', { key: index, className: 'chatitem msgitem' }, _react2.default.createElement('p', { className: 'msgcontent ' + msg.type }, msg.content));
 
-					}
-				})
-			)
-		);
+			}
+		})));
 	},
 	componentDidMount: function componentDidMount() {
 		var _this2 = this;
@@ -21844,7 +21796,6 @@ exports.default = _react2.default.createClass({
 		var x = e.clientX;
 		var y = e.clientY;
 
-
 		if (/ul|li/i.test(e.target.tagName)) {
 			Object.assign(this.refs.clear.style, {
 				left: x - left + 'px',
@@ -21861,6 +21812,8 @@ exports.default = _react2.default.createClass({
 	componentDidUpdate: function componentDidUpdate() {
 		var last = this.refs.chatbox.lastElementChild;
 		last && last.scrollIntoView(false);
+
+		document.querySelector('.input').focus();
 	},
 	timeformat: function timeformat(nums) {
 		var d = new Date(nums);
@@ -22147,10 +22100,6 @@ exports.default = _react2.default.createClass({
 
 		var input = this.refs.input;
 		var msg = input.innerHTML.trim();
-
-		setTimeout(function () {
-			return input.focus();
-		}, 50);
 
 		if (msg) {
 			//util.compress(msg, function(str){
