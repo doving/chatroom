@@ -22148,7 +22148,9 @@ exports.default = _react2.default.createClass({
 		var input = this.refs.input;
 		var msg = input.innerHTML.trim();
 
-		input.focus();
+		setTimeout(function () {
+			return input.focus();
+		}, 50);
 
 		if (msg) {
 			//util.compress(msg, function(str){
@@ -22156,7 +22158,7 @@ exports.default = _react2.default.createClass({
 				to: currentId,
 				msg: msg
 			});
-			input.innerHTML = '0';
+			input.innerHTML = '';
 			//});
 		}
 	}

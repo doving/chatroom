@@ -253,7 +253,7 @@ export default React.createClass({
 		let input = this.refs.input;
 		let msg = input.innerHTML.trim();
 
-		input.focus();
+		setTimeout(() => input.focus(), 50);
 
         if(msg){
             //util.compress(msg, function(str){
@@ -261,7 +261,7 @@ export default React.createClass({
                 	to: currentId,
                 	msg
                 });
-                input.innerHTML = '0';
+                input.innerHTML = '';
             //});
         }
 	}
