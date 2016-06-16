@@ -86,10 +86,7 @@ export default React.createClass({
 	},
 
 	componentDidUpdate() {
-		let last = this.refs.chatbox.lastElementChild;
-		last && last.scrollIntoView(false);
-
-		document.querySelector('.input').scrollIntoView(false);
+		this.refs.chatbox.scrollTop = 100000000;
 	},
 
 	timeformat(nums) {

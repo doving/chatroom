@@ -21810,10 +21810,7 @@ exports.default = _react2.default.createClass({
 		this.refs.clear.classList.add('none');
 	},
 	componentDidUpdate: function componentDidUpdate() {
-		var last = this.refs.chatbox.lastElementChild;
-		last && last.scrollIntoView(false);
-
-		document.querySelector('.input').scrollIntoView(false);
+		this.refs.chatbox.scrollTop = 100000000;
 	},
 	timeformat: function timeformat(nums) {
 		var d = new Date(nums);
