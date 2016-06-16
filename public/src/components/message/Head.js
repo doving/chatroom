@@ -38,7 +38,7 @@ export default React.createClass({
 				<div ref='menu' className='menu none'>
 					<i className='icon-menu'></i>
 				</div>
-				<p className='title' onClick={this.clickHandler}>{msgTitle}</p>
+				<p ref='title' className='title'>{msgTitle}</p>
 				<div className='members' ref='members'>{members}</div>
 			</div>
 		);
@@ -52,11 +52,12 @@ export default React.createClass({
 		});
 
 		this.refs.menu.addEventListener('ontouchstart' in this.refs.menu ? 'touchstart' : 'click', this.menuHandler)
-		
+		this.refs.title.addEventListener('ontouchstart' in this.refs.title ? 'touchstart' : 'click', this.clickHandler)
 	},
 
-	clickHandler() {
-		this.refs.members.classList.toggle('open');
+	clickHandler(e) {
+		console.log(e.target);
+		e.target.className == 'title' && this.refs.members.classList.toggle('open');
 	},
 
 	menuHandler(e) {
