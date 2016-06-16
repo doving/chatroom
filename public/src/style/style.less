@@ -78,7 +78,7 @@ li{
     margin: -350px auto auto -500px;
     transition: all 0.5s;
     -webkit-transition: all 0.5s;
-    .left, .right{
+    .left, .right, .message, .footer{
         transition: all 0.4s;
         -webkit-transition: all 0.4s;
     }
@@ -106,10 +106,6 @@ li{
         }
     }
     @media screen and (max-width: 500px){
-        .right{
-            width: 100%;
-            max-width: 100%;
-        }
         .message-title .menu{
             display: block;
         }
@@ -120,6 +116,38 @@ li{
             &.show{
                 transform: translateX(0);
                 -webkit-transform: translateX(0);
+            }
+        }
+        .right{
+            width: 100%;
+            max-width: 100%;
+            .footer{
+                height: 75px;
+                .input{
+                    left: 5px;
+                    top: 35px;
+                    bottom: 5px;
+                    width: calc(~'100% - 75px');
+                    width: -webkit-calc(~'100% - 75px');
+                    border-radius: 3px;
+                    border: solid 1px #ccc;
+                    margin-right: 70px;
+                    background: #fff;
+                    line-height: 25px;
+                    overflow: hidden;
+                    img{
+                        height: 100%;
+                    }
+                }
+                .send{
+                    border-radius: 3px; 
+                    width: 60px;
+                    height: 35px;
+                }
+            }
+            .message{
+                height: calc(~'100% - 125px');
+                height: -webkit-calc(~'100% - 125px');
             }
         }
         .message-title .menu.show{
@@ -388,7 +416,11 @@ li{
         border-bottom: solid #ddd 1px;
         cursor: pointer;
         background: #eee;
+        font-size: 16px;
         z-index: 1;
+        i{
+            font-size: 16px;
+        }
     }
     .members{
         box-shadow: 0 1.2px 4px #dedede;
@@ -441,7 +473,7 @@ li{
     position: absolute;
     left: 0;
     top: 50px;
-    height: calc(~'70% - 60px');
+    height: calc(~'70% - 50px');
     height: -webkit-calc(~'70% - 50px');
     width: 100%;
     .clear{

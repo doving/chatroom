@@ -89,9 +89,9 @@ const App =  React.createClass({
 			});
 		})
 
-		/*document.addEventListener('visibilitychange', e => {
-
-		});*/
+		document.addEventListener('touchmove', e => {
+			//e.preventDefault();
+		});
 	},
 
 	showTip(content) {

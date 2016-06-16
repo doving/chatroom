@@ -2,12 +2,6 @@ import React      from 'react';
 import isOutside  from '../../util/isOutside';
 
 export default React.createClass({
-	getInitialState() {
-		return {
-			flag: '∧∨'
-		}
-	},
-
 	render() {
 		const { user, currentId } = this.props;
 
@@ -38,7 +32,9 @@ export default React.createClass({
 				<div ref='menu' className='menu none'>
 					<i className='icon-menu'></i>
 				</div>
-				<p ref='title' className='title'>{msgTitle}</p>
+				<p ref='title' className='title'>
+					{msgTitle}<i ref='icon' className='icon-angle-down'></i>
+				</p>
 				<div className='members' ref='members'>{members}</div>
 			</div>
 		);
@@ -58,7 +54,12 @@ export default React.createClass({
 	},
 
 	clickHandler(e) {
-		e.target.className == 'title' && this.refs.members.classList.toggle('open');
+		const mb = this.refs.members;
+
+		if(/title|icon-angle/.test(e.target.className)){
+			mb.classList.toggle('open');
+			this.refs.icon.className = mb.classList.contains('open') ? 'icon-angle-up' : 'icon-angle-down';
+		}
 		e.stopPropagation();
 	},
 
