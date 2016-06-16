@@ -257,9 +257,8 @@ export default React.createClass({
                 	to: currentId,
                 	msg
                 });
-                input.innerHTML = '';
+                input.innerHTML = '\t';
             //});
         }
-        this.refs.input.focus();
 	}
 });
