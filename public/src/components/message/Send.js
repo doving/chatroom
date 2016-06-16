@@ -58,7 +58,7 @@ export default React.createClass({
 		this.refs.input.focus();
 	},
 
-	shouldComponentUpdate(){ return false; },
+	//shouldComponentUpdate(){ return false; },
 
 	heartItemClickHandler(e) {
 		const { send, dispatch } = this.props;

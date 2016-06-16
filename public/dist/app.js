@@ -21870,9 +21870,9 @@ exports.default = _react2.default.createClass({
 
 		this.refs.input.focus();
 	},
-	shouldComponentUpdate: function shouldComponentUpdate() {
-		return false;
-	},
+
+	//shouldComponentUpdate(){ return false; },
+
 	heartItemClickHandler: function heartItemClickHandler(e) {
 		var _props = this.props;
 		var send = _props.send;
