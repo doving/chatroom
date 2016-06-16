@@ -52,7 +52,7 @@ export default React.createClass({
 		});
 
 		this.refs.menu.addEventListener('ontouchstart' in this.refs.menu ? 'touchstart' : 'click', this.menuHandler)
-		this.refs.title.addEventListener('ontouchend' in this.refs.title ? 'ontouchend' : 'click', this.clickHandler)
+		this.refs.title.addEventListener('ontouchend' in this.refs.title ? 'touchend' : 'click', this.clickHandler)
 	},
 
 	clickHandler(e) {
