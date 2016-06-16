@@ -21617,9 +21617,19 @@ var _isOutside = require('../../util/isOutside');
 
 var _isOutside2 = _interopRequireDefault(_isOutside);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _toConsumableArray(arr) {
+	if (Array.isArray(arr)) {
+		for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+			arr2[i] = arr[i];
+		}return arr2;
+	} else {
+		return Array.from(arr);
+	}
+}
 
 exports.default = _react2.default.createClass({
 	displayName: 'Head',
@@ -21627,7 +21637,6 @@ exports.default = _react2.default.createClass({
 		var _props = this.props;
 		var user = _props.user;
 		var currentId = _props.currentId;
-
 
 		var currentIndex = user.list.findIndex(function (o) {
 			return o.id == currentId;
@@ -21638,51 +21647,14 @@ exports.default = _react2.default.createClass({
 
 		if (currentId == 'HALL') {
 			[user.myself].concat(_toConsumableArray(user.list)).forEach(function (o, i) {
-				o.active && members.push(_react2.default.createElement(
-					'div',
-					{ key: i, className: 'member' },
-					_react2.default.createElement('img', { className: 'head', src: o.head }),
-					_react2.default.createElement(
-						'p',
-						{ className: 'nickname' },
-						o.nickname
-					)
-				));
+				o.active && members.push(_react2.default.createElement('div', { key: i, className: 'member' }, _react2.default.createElement('img', { className: 'head', src: o.head }), _react2.default.createElement('p', { className: 'nickname' }, o.nickname)));
 			});
 		} else {
 			var o = user.list[currentIndex];
-			members = _react2.default.createElement(
-				'div',
-				{ className: 'member' },
-				_react2.default.createElement('img', { className: 'head', src: o.head }),
-				_react2.default.createElement(
-					'p',
-					{ className: 'nickname' },
-					o.nickname
-				)
-			);
+			members = _react2.default.createElement('div', { className: 'member' }, _react2.default.createElement('img', { className: 'head', src: o.head }), _react2.default.createElement('p', { className: 'nickname' }, o.nickname));
 		}
 
-		return _react2.default.createElement(
-			'div',
-			{ className: 'message-title' },
-			_react2.default.createElement(
-				'div',
-				{ ref: 'menu', className: 'menu none' },
-				_react2.default.createElement('i', { className: 'icon-menu' })
-			),
-			_react2.default.createElement(
-				'p',
-				{ ref: 'title', className: 'title' },
-				msgTitle,
-				_react2.default.createElement('i', { ref: 'icon', className: 'icon-angle-down' })
-			),
-			_react2.default.createElement(
-				'div',
-				{ className: 'members', ref: 'members' },
-				members
-			)
-		);
+		return _react2.default.createElement('div', { className: 'message-title' }, _react2.default.createElement('div', { ref: 'menu', className: 'menu none' }, _react2.default.createElement('i', { className: 'icon-menu' })), _react2.default.createElement('p', { ref: 'title', className: 'title' }, msgTitle, _react2.default.createElement('i', { ref: 'icon', className: 'icon-angle-down' })), _react2.default.createElement('div', { className: 'members', ref: 'members' }, members));
 	},
 	componentDidMount: function componentDidMount() {
 		var _this = this;
