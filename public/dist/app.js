@@ -21666,7 +21666,7 @@ exports.default = _react2.default.createClass({
 		var touchable = 'ontouchstart' in document.body;
 
 		document.addEventListener(touchable ? 'touchstart' : 'click', function (e) {
-			if ((0, _isOutside2.default)(e.pageX, e.pageY, _this.refs.members.getBoundingClientRect())) {
+			if ((0, _isOutside2.default)(e.clientX, e.clientY, _this.refs.members.getBoundingClientRect())) {
 				_this.refs.members.classList.remove('open');
 			}
 		});

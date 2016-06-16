@@ -48,7 +48,7 @@ export default React.createClass({
 		let touchable = 'ontouchstart' in document.body;
 
 		document.addEventListener(touchable ? 'touchstart' : 'click', e => {
-			if(isOutside(e.pageX, e.pageY, this.refs.members.getBoundingClientRect())){
+			if(isOutside(e.clientX, e.clientY, this.refs.members.getBoundingClientRect())){
 				this.refs.members.classList.remove('open');
 			}
 		});
