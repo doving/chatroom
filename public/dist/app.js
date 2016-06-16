@@ -21813,7 +21813,7 @@ exports.default = _react2.default.createClass({
 		var last = this.refs.chatbox.lastElementChild;
 		last && last.scrollIntoView(false);
 
-		document.querySelector('.input').focus();
+		document.querySelector('.input').scrollIntoView(false);
 	},
 	timeformat: function timeformat(nums) {
 		var d = new Date(nums);
