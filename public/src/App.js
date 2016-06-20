@@ -55,37 +55,41 @@ const App =  React.createClass({
 
 				const { myself, list } = user;
 
-				let o =list.find(u => u.id === obj.id);
+				if(user.isLogin){
+					let o =list.find(u => u.id === obj.id);
 
-				user.isLogin && dispatch(actions.receiveMsg(obj, myself.id));
+					dispatch(actions.receiveMsg(obj, myself.id));
 
-				document.hidden && Notification && Notification.requestPermission(permission => {
-					if(permission == 'granted'){
-						let notification = new Notification(
-							obj.target == 'HALL' ? `大厅-${o.nickname}` : o.nickname ,
-							{
-								icon: o.head,
-								body: obj.content,
-								tag: obj.target
+					document.hidden && Notification && Notification.requestPermission(permission => {
+						if(permission == 'granted'){
+							let notification = new Notification(
+								obj.target == 'HALL' ? `大厅-${o.nickname}` : o.nickname ,
+								{
+									icon: o.head,
+									body: obj.content,
+									tag: obj.target
+								});
+
+							notification.addEventListener('click', e => {
+								window.focus();
+								dispatch(actions.changeCurrentId(obj.target === myself.id ? obj.id : obj.target));
+								notification.close();
 							});
-
-						notification.addEventListener('click', e => {
-							window.focus();
-							dispatch(actions.changeCurrentId(obj.target === myself.id ? obj.id : obj.target));
-							notification.close();
-						});
-					}
-				});
+						}
+					});
+				}
 			});
 
 			socket.on('userOut', id => {
 				const { user } = this.props;
 
-				user.isLogin && dispatch(actions.userOut(id));
+				if(user.isLogin){
+					dispatch(actions.userOut(id));
 
-				id === this.props.message.currentId && dispatch(actions.changeCurrentId('HALL'));
+					id === this.props.message.currentId && dispatch(actions.changeCurrentId('HALL'));
 
-				this.showTip(`${user.list.find(u => u.id == id).nickname} 退出群聊`);
+					this.showTip(`${user.list.find(u => u.id == id).nickname} 退出群聊`);
+				}
 			});
 		})
 

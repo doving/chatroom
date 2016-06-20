@@ -21165,7 +21165,9 @@ var _actions = require('./actions');
 
 var _actions2 = _interopRequireDefault(_actions);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
 
 var App = _react2.default.createClass({
 	displayName: 'App',
@@ -21176,24 +21178,12 @@ var App = _react2.default.createClass({
 		var send = _props.send;
 		var dispatch = _props.dispatch;
 
-
-		return _react2.default.createElement(
-			'div',
-			null,
-			_react2.default.createElement(_HeartDialog2.default, { favor: send.favor, dispatch: dispatch }),
-			this.props.user.isLogin ? _react2.default.createElement(
-				'div',
-				{ className: 'main' },
-				_react2.default.createElement(_user2.default, { user: user, message: message, dispatch: dispatch }),
-				_react2.default.createElement(_message2.default, { dispatch: dispatch, user: user, message: message, send: send })
-			) : _react2.default.createElement(_Login2.default, { dispatch: dispatch, socket: user.socket, defaultHead: user.defaultHead })
-		);
+		return _react2.default.createElement('div', null, _react2.default.createElement(_HeartDialog2.default, { favor: send.favor, dispatch: dispatch }), this.props.user.isLogin ? _react2.default.createElement('div', { className: 'main' }, _react2.default.createElement(_user2.default, { user: user, message: message, dispatch: dispatch }), _react2.default.createElement(_message2.default, { dispatch: dispatch, user: user, message: message, send: send })) : _react2.default.createElement(_Login2.default, { dispatch: dispatch, socket: user.socket, defaultHead: user.defaultHead }));
 	},
 	componentDidMount: function componentDidMount() {
 		var _this = this;
 
 		var dispatch = this.props.dispatch;
-
 
 		var socket = io();
 
@@ -21210,7 +21200,6 @@ var App = _react2.default.createClass({
 			socket.on('userJoin', function (userObj) {
 				var user = _this.props.user;
 
-
 				if (user.isLogin) {
 					dispatch(_actions2.default.userJoin(userObj));
 
@@ -21223,43 +21212,47 @@ var App = _react2.default.createClass({
 				var myself = user.myself;
 				var list = user.list;
 
+				if (user.isLogin) {
+					(function () {
+						var o = list.find(function (u) {
+							return u.id === obj.id;
+						});
 
-				var o = list.find(function (u) {
-					return u.id === obj.id;
-				});
+						dispatch(_actions2.default.receiveMsg(obj, myself.id));
 
-				user.isLogin && dispatch(_actions2.default.receiveMsg(obj, myself.id));
+						document.hidden && Notification && Notification.requestPermission(function (permission) {
+							if (permission == 'granted') {
+								(function () {
+									var notification = new Notification(obj.target == 'HALL' ? '大厅-' + o.nickname : o.nickname, {
+										icon: o.head,
+										body: obj.content,
+										tag: obj.target
+									});
 
-				document.hidden && Notification && Notification.requestPermission(function (permission) {
-					if (permission == 'granted') {
-						(function () {
-							var notification = new Notification(obj.target == 'HALL' ? '大厅-' + o.nickname : o.nickname, {
-								icon: o.head,
-								body: obj.content,
-								tag: obj.target
-							});
-
-							notification.addEventListener('click', function (e) {
-								window.focus();
-								dispatch(_actions2.default.changeCurrentId(obj.target === myself.id ? obj.id : obj.target));
-								notification.close();
-							});
-						})();
-					}
-				});
+									notification.addEventListener('click', function (e) {
+										window.focus();
+										dispatch(_actions2.default.changeCurrentId(obj.target === myself.id ? obj.id : obj.target));
+										notification.close();
+									});
+								})();
+							}
+						});
+					})();
+				}
 			});
 
 			socket.on('userOut', function (id) {
 				var user = _this.props.user;
 
+				if (user.isLogin) {
+					dispatch(_actions2.default.userOut(id));
 
-				user.isLogin && dispatch(_actions2.default.userOut(id));
+					id === _this.props.message.currentId && dispatch(_actions2.default.changeCurrentId('HALL'));
 
-				id === _this.props.message.currentId && dispatch(_actions2.default.changeCurrentId('HALL'));
-
-				_this.showTip(user.list.find(function (u) {
-					return u.id == id;
-				}).nickname + ' 退出群聊');
+					_this.showTip(user.list.find(function (u) {
+						return u.id == id;
+					}).nickname + ' 退出群聊');
+				}
 			});
 		});
 
@@ -21271,7 +21264,6 @@ var App = _react2.default.createClass({
 		var _props2 = this.props;
 		var dispatch = _props2.dispatch;
 		var user = _props2.user;
-
 
 		dispatch(_actions2.default.receiveMsg({
 			type: 'tip',
