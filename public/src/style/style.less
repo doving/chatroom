@@ -27,6 +27,37 @@ li{
         cursor: pointer;
     }
 }
+.fork{
+    position: absolute;
+    background: orange;
+    width: 220px;
+    padding: 2px;
+    z-index: 11;
+    right: -85px;
+    top: -35px;
+    transform-origin: 0 50%;
+    -webkit-transform-origin: 0 50%;
+    transform: rotateZ(45deg);
+    -webkit-transform: rotateZ(45deg);
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    a{  
+        font-size: 16px;
+        display: block;
+        text-align: center;
+        height: 28px;
+        line-height: 28px;
+        border: dashed 1px #000;
+        text-decoration: none;
+        color: #fff;
+    }
+    @media screen and (max-width: 1000px){
+        transform: scale(0.6) rotateZ(45deg);
+        -webkit-transform: scale(0.6) rotateZ(45deg);
+        right: -140px;
+        top: -29px;
+    }
+}
 .login{
     position: absolute;
     height: 100%;

@@ -6,6 +6,8 @@ import Message         from './components/message';
 import Login           from './components/Login';
 import HeartDialog     from './components/HeartDialog';
 
+import ForkMe          from './components/ForkMe';
+
 import actions         from './actions';
 
 const App =  React.createClass({
@@ -14,6 +16,7 @@ const App =  React.createClass({
 
 		return(
 			<div>
+				<ForkMe />
 				<HeartDialog favor={send.favor} dispatch={dispatch} />
 				{	
 					this.props.user.isLogin ?

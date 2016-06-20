@@ -21161,13 +21161,15 @@ var _HeartDialog = require('./components/HeartDialog');
 
 var _HeartDialog2 = _interopRequireDefault(_HeartDialog);
 
+var _ForkMe = require('./components/ForkMe');
+
+var _ForkMe2 = _interopRequireDefault(_ForkMe);
+
 var _actions = require('./actions');
 
 var _actions2 = _interopRequireDefault(_actions);
 
-function _interopRequireDefault(obj) {
-	return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var App = _react2.default.createClass({
 	displayName: 'App',
@@ -21178,12 +21180,25 @@ var App = _react2.default.createClass({
 		var send = _props.send;
 		var dispatch = _props.dispatch;
 
-		return _react2.default.createElement('div', null, _react2.default.createElement(_HeartDialog2.default, { favor: send.favor, dispatch: dispatch }), this.props.user.isLogin ? _react2.default.createElement('div', { className: 'main' }, _react2.default.createElement(_user2.default, { user: user, message: message, dispatch: dispatch }), _react2.default.createElement(_message2.default, { dispatch: dispatch, user: user, message: message, send: send })) : _react2.default.createElement(_Login2.default, { dispatch: dispatch, socket: user.socket, defaultHead: user.defaultHead }));
+
+		return _react2.default.createElement(
+			'div',
+			null,
+			_react2.default.createElement(_ForkMe2.default, null),
+			_react2.default.createElement(_HeartDialog2.default, { favor: send.favor, dispatch: dispatch }),
+			this.props.user.isLogin ? _react2.default.createElement(
+				'div',
+				{ className: 'main' },
+				_react2.default.createElement(_user2.default, { user: user, message: message, dispatch: dispatch }),
+				_react2.default.createElement(_message2.default, { dispatch: dispatch, user: user, message: message, send: send })
+			) : _react2.default.createElement(_Login2.default, { dispatch: dispatch, socket: user.socket, defaultHead: user.defaultHead })
+		);
 	},
 	componentDidMount: function componentDidMount() {
 		var _this = this;
 
 		var dispatch = this.props.dispatch;
+
 
 		var socket = io();
 
@@ -21200,6 +21215,7 @@ var App = _react2.default.createClass({
 			socket.on('userJoin', function (userObj) {
 				var user = _this.props.user;
 
+
 				if (user.isLogin) {
 					dispatch(_actions2.default.userJoin(userObj));
 
@@ -21211,6 +21227,7 @@ var App = _react2.default.createClass({
 				var user = _this.props.user;
 				var myself = user.myself;
 				var list = user.list;
+
 
 				if (user.isLogin) {
 					(function () {
@@ -21244,6 +21261,7 @@ var App = _react2.default.createClass({
 			socket.on('userOut', function (id) {
 				var user = _this.props.user;
 
+
 				if (user.isLogin) {
 					dispatch(_actions2.default.userOut(id));
 
@@ -21265,6 +21283,7 @@ var App = _react2.default.createClass({
 		var dispatch = _props2.dispatch;
 		var user = _props2.user;
 
+
 		dispatch(_actions2.default.receiveMsg({
 			type: 'tip',
 			content: content,
@@ -21280,7 +21299,7 @@ var mapStateToProps = function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(App);
 
-},{"./actions":195,"./components/HeartDialog":199,"./components/Login":200,"./components/message":204,"./components/user":207,"react":180,"react-redux":33}],195:[function(require,module,exports){
+},{"./actions":195,"./components/ForkMe":199,"./components/HeartDialog":200,"./components/Login":201,"./components/message":205,"./components/user":208,"react":180,"react-redux":33}],195:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21331,7 +21350,7 @@ exports.default = {
 	}
 };
 
-},{"../config/ACTIONTYPE":208}],197:[function(require,module,exports){
+},{"../config/ACTIONTYPE":209}],197:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21353,7 +21372,7 @@ exports.default = {
 	}
 };
 
-},{"../config/ACTIONTYPE":208}],198:[function(require,module,exports){
+},{"../config/ACTIONTYPE":209}],198:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21398,7 +21417,35 @@ exports.default = {
 	}
 };
 
-},{"../config/ACTIONTYPE":208}],199:[function(require,module,exports){
+},{"../config/ACTIONTYPE":209}],199:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _react2.default.createClass({
+	displayName: 'ForkMe',
+	render: function render() {
+		return _react2.default.createElement(
+			'div',
+			{ className: 'fork' },
+			_react2.default.createElement(
+				'a',
+				{ target: '_blank', href: 'https://github.com/doving/chatroom' },
+				'Fork Me On Github'
+			)
+		);
+	}
+});
+
+},{"react":180}],200:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21491,7 +21538,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"../actions":195,"../util/isOutSide":215,"react":180}],200:[function(require,module,exports){
+},{"../actions":195,"../util/isOutSide":216,"react":180}],201:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21594,7 +21641,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"../../actions":195,"react":180}],201:[function(require,module,exports){
+},{"../../actions":195,"react":180}],202:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21705,7 +21752,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"../../util/isOutside":216,"react":180}],202:[function(require,module,exports){
+},{"../../util/isOutside":217,"react":180}],203:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21870,7 +21917,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"../../actions":195,"../../util/isOutSide":215,"react":180}],203:[function(require,module,exports){
+},{"../../actions":195,"../../util/isOutSide":216,"react":180}],204:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22193,7 +22240,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"../../actions":195,"../../util/isOutside":216,"react":180}],204:[function(require,module,exports){
+},{"../../actions":195,"../../util/isOutside":217,"react":180}],205:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22238,7 +22285,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"./Head":201,"./Message":202,"./Send":203,"react":180}],205:[function(require,module,exports){
+},{"./Head":202,"./Message":203,"./Send":204,"react":180}],206:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22278,7 +22325,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"react":180}],206:[function(require,module,exports){
+},{"react":180}],207:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22293,19 +22340,9 @@ var _actions = require('../../actions');
 
 var _actions2 = _interopRequireDefault(_actions);
 
-function _interopRequireDefault(obj) {
-	return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) {
-	if (Array.isArray(arr)) {
-		for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
-			arr2[i] = arr[i];
-		}return arr2;
-	} else {
-		return Array.from(arr);
-	}
-}
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 exports.default = _react2.default.createClass({
 	displayName: 'UserList',
@@ -22319,6 +22356,7 @@ exports.default = _react2.default.createClass({
 		var list = user.list;
 		var defaultHead = user.defaultHead;
 		var currentId = message.currentId;
+
 
 		var heads = [_react2.default.createElement('img', { key: '0', className: 'hall-head', src: myself.head })];
 		var users = [];
@@ -22336,9 +22374,24 @@ exports.default = _react2.default.createClass({
 
 			var prevMsg = msgObj.news[newCount - 1] ? msgObj.news[newCount - 1].content : msgObj.msg[msgObj.msg.length - 1] ? msgObj.msg[msgObj.msg.length - 1].content : '';
 
-			users.push(_react2.default.createElement('li', { className: cls, key: index, onClick: function onClick() {
-					return _this.clickHandler(item.id);
-				} }, _react2.default.createElement('img', { className: 'head', src: item.head || defaultHead }), item.nickname, newCount > 0 ? _react2.default.createElement('span', { className: 'news-count' }, newCount) : '', _react2.default.createElement('p', { className: 'prev-msg' }, prevMsg)));
+			users.push(_react2.default.createElement(
+				'li',
+				{ className: cls, key: index, onClick: function onClick() {
+						return _this.clickHandler(item.id);
+					} },
+				_react2.default.createElement('img', { className: 'head', src: item.head || defaultHead }),
+				item.nickname,
+				newCount > 0 ? _react2.default.createElement(
+					'span',
+					{ className: 'news-count' },
+					newCount
+				) : '',
+				_react2.default.createElement(
+					'p',
+					{ className: 'prev-msg' },
+					prevMsg
+				)
+			));
 
 			if (count < 9) {
 				heads.push(_react2.default.createElement('img', { key: count, className: 'hall-head', src: item.head || defaultHead }));
@@ -22360,16 +22413,46 @@ exports.default = _react2.default.createClass({
 			return o.id == lastMsgObj.id;
 		}).nickname + ' : ' + lastMsgObj.content : lastMsgObj.content : '';
 
-		return _react2.default.createElement('div', { className: 'users' }, _react2.default.createElement('ul', { className: 'userlist' }, _react2.default.createElement('li', { className: hallClass, onClick: function onClick() {
-				return _this.clickHandler('HALL');
-			} }, _react2.default.createElement('div', { className: 'head ' + headClass }, heads), '大厅（', count, '）', hallNewCount > 0 ? _react2.default.createElement('span', { className: 'news-count' }, hallNewCount) : '', _react2.default.createElement('p', { className: 'prev-msg' }, prevMsg)), users));
+		return _react2.default.createElement(
+			'div',
+			{ className: 'users' },
+			_react2.default.createElement(
+				'ul',
+				{ className: 'userlist' },
+				_react2.default.createElement(
+					'li',
+					{ className: hallClass, onClick: function onClick() {
+							return _this.clickHandler('HALL');
+						} },
+					_react2.default.createElement(
+						'div',
+						{ className: 'head ' + headClass },
+						heads
+					),
+					'大厅（',
+					count,
+					'）',
+					hallNewCount > 0 ? _react2.default.createElement(
+						'span',
+						{ className: 'news-count' },
+						hallNewCount
+					) : '',
+					_react2.default.createElement(
+						'p',
+						{ className: 'prev-msg' },
+						prevMsg
+					)
+				),
+				users
+			)
+		);
 	},
 	clickHandler: function clickHandler(id) {
 		this.props.dispatch(_actions2.default.changeCurrentId(id));
 	}
 });
 
-},{"../../actions":195,"react":180}],207:[function(require,module,exports){
+},{"../../actions":195,"react":180}],208:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22411,7 +22494,7 @@ exports.default = _react2.default.createClass({
 	}
 });
 
-},{"./MyselfInfo":205,"./UserList":206,"react":180}],208:[function(require,module,exports){
+},{"./MyselfInfo":206,"./UserList":207,"react":180}],209:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22428,7 +22511,7 @@ exports.default = Object.freeze({
 
 });
 
-},{}],209:[function(require,module,exports){
+},{}],210:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22482,7 +22565,7 @@ exports.default = Object.freeze({
 	}
 });
 
-},{}],210:[function(require,module,exports){
+},{}],211:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -22518,7 +22601,7 @@ window.getState = store.getState;
 	_react2.default.createElement(_App2.default, null)
 ), document.querySelector('#container'));
 
-},{"./App":194,"./config/INITSTATE":209,"./reducers":211,"react":180,"react-dom":30,"react-redux":33,"redux":186}],211:[function(require,module,exports){
+},{"./App":194,"./config/INITSTATE":210,"./reducers":212,"react":180,"react-dom":30,"react-redux":33,"redux":186}],212:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22547,7 +22630,7 @@ exports.default = (0, _redux.combineReducers)({
 	send: _sendReducer2.default
 });
 
-},{"./messageReducer":212,"./sendReducer":213,"./userReducer":214,"redux":186}],212:[function(require,module,exports){
+},{"./messageReducer":213,"./sendReducer":214,"./userReducer":215,"redux":186}],213:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22617,7 +22700,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-},{"../config/ACTIONTYPE":208,"../config/INITSTATE":209}],213:[function(require,module,exports){
+},{"../config/ACTIONTYPE":209,"../config/INITSTATE":210}],214:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22648,7 +22731,7 @@ var _INITSTATE2 = _interopRequireDefault(_INITSTATE);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"../config/ACTIONTYPE":208,"../config/INITSTATE":209}],214:[function(require,module,exports){
+},{"../config/ACTIONTYPE":209,"../config/INITSTATE":210}],215:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22708,7 +22791,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-},{"../config/ACTIONTYPE":208,"../config/INITSTATE":209}],215:[function(require,module,exports){
+},{"../config/ACTIONTYPE":209,"../config/INITSTATE":210}],216:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22719,7 +22802,7 @@ exports.default = function (x, y, obj) {
     return x < obj.left || x > obj.right || y > obj.bottom || y < obj.top;
 };
 
-},{}],216:[function(require,module,exports){
+},{}],217:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22730,4 +22813,4 @@ exports.default = function (x, y, obj) {
     return x < obj.left || x > obj.right || y > obj.bottom || y < obj.top;
 };
 
-},{}]},{},[210]);
+},{}]},{},[211]);
