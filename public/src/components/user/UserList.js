@@ -15,15 +15,21 @@ export default React.createClass({
 		list.forEach((item, index) => {
 			if(!item.active)return;
 
+			const msgObj = message.list[item.id] || {news: [], msg: []};
+
 			const cls = item.id === currentId ? 'item active' : 'item';
 
-			const newCount = (message.list[item.id] || {news: []}).news.length;
+			const newCount = msgObj.news.length;
+
+			const prevMsg = msgObj.news[newCount-1] ? msgObj.news[newCount-1].content : 
+								msgObj.msg[msgObj.msg.length-1] ? msgObj.msg[msgObj.msg.length-1].content : '';
 
 			users.push(
 				<li className={cls} key={index} onClick={() => this.clickHandler(item.id)}>
 					<img className='head' src={item.head || defaultHead}/>
 					{item.nickname}
 					{newCount > 0 ? <span className='news-count'>{newCount}</span> : ''}
+					<p className='prev-msg'>{prevMsg}</p>
 				</li>
 			);
 
@@ -39,7 +45,16 @@ export default React.createClass({
 
 		let hallClass = currentId === 'HALL' ? 'item hall active' : 'item hall';
 
-		const hallNewCount = (message.list['HALL'] || {news: []}).news.length;
+		const hallObj = message.list['HALL'] || {news: [], msg: []};
+
+		const hallNewCount = hallObj.news.length;
+
+		const lastMsgObj = hallObj.news[hallNewCount-1] ? hallObj.news[hallNewCount-1] : 
+							hallObj.msg[hallObj.msg.length-1] ? hallObj.msg[hallObj.msg.length-1] : '';
+
+		const prevMsg = lastMsgObj ? 
+			lastMsgObj.type === 'msg' ? `${[myself, ...list].find(o=>o.id == lastMsgObj.id).nickname}:${lastMsgObj.content}` :
+				 lastMsgObj.content : '';
 		
 		return (
 			<div className='users'>
@@ -48,6 +63,7 @@ export default React.createClass({
 						<div className={'head ' + headClass}>{heads}</div>
 						大厅（{count}）
 						{hallNewCount > 0 ? <span className='news-count'>{hallNewCount}</span> : ''}
+						<p className='prev-msg'>{prevMsg}</p>
 					</li>
 					{users}
 				</ul>
