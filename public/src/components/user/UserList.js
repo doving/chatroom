@@ -53,7 +53,7 @@ export default React.createClass({
 							hallObj.msg[hallObj.msg.length-1] ? hallObj.msg[hallObj.msg.length-1] : '';
 
 		const prevMsg = lastMsgObj ? 
-			lastMsgObj.type === 'msg' ? `${[myself, ...list].find(o=>o.id == lastMsgObj.id).nickname}:${lastMsgObj.content}` :
+			lastMsgObj.type === 'msg' ? `${[myself, ...list].find(o=>o.id == lastMsgObj.id).nickname} : ${lastMsgObj.content}` :
 				 lastMsgObj.content : '';
 		
 		return (

@@ -22358,7 +22358,7 @@ exports.default = _react2.default.createClass({
 
 		var prevMsg = lastMsgObj ? lastMsgObj.type === 'msg' ? [myself].concat(_toConsumableArray(list)).find(function (o) {
 			return o.id == lastMsgObj.id;
-		}).nickname + ':' + lastMsgObj.content : lastMsgObj.content : '';
+		}).nickname + ' : ' + lastMsgObj.content : lastMsgObj.content : '';
 
 		return _react2.default.createElement('div', { className: 'users' }, _react2.default.createElement('ul', { className: 'userlist' }, _react2.default.createElement('li', { className: hallClass, onClick: function onClick() {
 				return _this.clickHandler('HALL');
