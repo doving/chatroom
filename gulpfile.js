@@ -35,7 +35,7 @@ gulp.task('reactify', () => {
 		})
 		.pipe(source('app.js'))
 		.pipe(buffer())
-		/*.pipe(uglify())*/
+		.pipe(uglify())
 		.pipe(gulp.dest(destSrc))
 		.pipe(notify('reactify task done !'))
 });
