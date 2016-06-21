@@ -8,6 +8,7 @@ const minifycss    = require('gulp-minify-css');
 const less         = require('gulp-less');
 const concat       = require('gulp-concat');
 const notify       = require('gulp-notify');
+const envify       = require('loose-envify');
 
 const jsSrc   = './public/src/index.js';
 const cssSrc  = './public/src/style/*.*';
@@ -24,9 +25,14 @@ bf.on('update', () => {
 	gulp.start('reactify');
 });
 
+process.env.NODE_ENV = 'production';//设置为生产环境
+
 gulp.task('reactify', () => {
 	return bf.transform('babelify', {
-			presets: ['react', 'es2015']
+			presets: ['es2015', 'react']
+		})
+		.transform('envify', {
+		  	'NODE_ENV': 'production'
 		})
 		.bundle()
 		.on('error', function(e){
