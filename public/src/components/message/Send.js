@@ -55,6 +55,10 @@ export default React.createClass({
 			}
 		});
 
+		document.addEventListener('drop', this.cancelDragDefault);
+		document.addEventListener('dragover', this.cancelDragDefault);
+		document.addEventListener('dragenter', this.cancelDragDefault);
+
 		this.refs.input.focus();
 	},
 
@@ -101,6 +105,7 @@ export default React.createClass({
 
 	dropHandler(e) {
 		e.preventDefault();
+		e.stopPropagation();
 		
 		let dt = e.dataTransfer;
 
