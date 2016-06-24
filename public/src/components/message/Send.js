@@ -36,7 +36,7 @@ export default React.createClass({
 					</div>
 				</div>
 				<section className='input' ref='input' contentEditable='true' 
-				onInput={this.inputHandler} onDrop={this.dropHandler}
+				onInput={this.inputHandler} onDragEnter={this.cancelDragDefault} onDragOver={this.cancelDragDefault} onDrop={this.dropHandler}
 				onPaste={this.pasteHandler} onKeyDown={this.keydownHandler}></section>
 				<button className='send' onClick={this.sendHandler}>发送</button>
 			</div>
@@ -94,35 +94,66 @@ export default React.createClass({
 
 	},
 
-	dropHandler(e) {
-		let data = e.dataTransfer;
+	cancelDragDefault(e) {
+		e.preventDefault();
+		e.stopPropagation();
+	},
 
-        [...data.items].forEach(item => {
+	dropHandler(e) {
+		e.preventDefault();
+		
+		let dt = e.dataTransfer;
+
+		for(let t of dt.types){
+			if(t == 'text/plain'){
+				this.dropInsert(dt.getData(t));
+			}else if(t == 'Files'){
+				for(let f of dt.files){
+					f.type.match(/^image\//) && this.loadImg(f);
+				}
+			}
+		}
+
+        /*[...data.items].forEach(item => {
             let type = item.type;
+            console.log(item);
             if(type.match(/^image\//)){
                 this.loadImg(item.getAsFile());
             }else if(type === 'text/plain'){
                 item.getAsString(this.dropInsert);
             }
-        });
+        });*/
 
-        e.preventDefault();
+        
 	},
 
 	pasteHandler(e) {
-		let data = e.clipboardData;
-
-        [...data.items].forEach(item => {
-            let type = item.type;
-            if(type.match(/^image\//)){
-                this.loadImg(item.getAsFile(), true);
-            }else if(type === 'text/plain'){
-                item.getAsString(str => {
-                    this.insertCont(str, 'text')
-                });
-            }
-        });
-
+		console.log(e.currentTarget, e.clipboardData);
+		let dt = e.clipboardData;
+		if(dt.items){
+			for(let item of dt.items){
+	            let type = item.type;
+	            if(type.match(/^image\//)){
+	                this.loadImg(item.getAsFile(), true);
+	            }else if(type === 'text/plain'){
+	                item.getAsString(str => {
+	                    this.insertCont(str, 'text')
+	                });
+	            }
+	        };
+	    }else{
+	    	for(let t of dt.types){
+				if(t == 'text/plain'){
+					this.insertCont(dt.getData(t), 'text');
+				}else if(t == 'Files'){
+					console.log(dt.files);
+					for(let f of dt.files){
+						f.type.match(/^image\//) && this.loadImg(f, true);
+					}
+				}
+			}
+	    }
+       
         e.preventDefault();
 	},
 
