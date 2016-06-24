@@ -133,7 +133,7 @@ export default React.createClass({
 	},
 
 	pasteHandler(e) {
-		console.log(e.currentTarget, e.clipboardData);
+		//console.log(e.currentTarget, e.clipboardData);
 		let dt = e.clipboardData;
 		if(dt.items){
 			for(let item of dt.items){
@@ -151,7 +151,7 @@ export default React.createClass({
 				if(t == 'text/plain'){
 					this.insertCont(dt.getData(t), 'text');
 				}else if(t == 'Files'){
-					console.log(dt.files);
+					//console.log(dt.files);
 					for(let f of dt.files){
 						f.type.match(/^image\//) && this.loadImg(f, true);
 					}

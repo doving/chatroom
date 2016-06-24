@@ -21,8 +21,10 @@ export default React.createClass({
 
 			const newCount = msgObj.news.length;
 
-			const prevMsg = msgObj.news[newCount-1] ? msgObj.news[newCount-1].content : 
+			let prevMsg = msgObj.news[newCount-1] ? msgObj.news[newCount-1].content : 
 								msgObj.msg[msgObj.msg.length-1] ? msgObj.msg[msgObj.msg.length-1].content : '';
+
+			prevMsg = prevMsg.replace(/<img[^>]+>(<\/img>)*/g, '[图片]');
 
 			users.push(
 				<li className={cls} key={index} onClick={() => this.clickHandler(item.id)}>
@@ -52,9 +54,11 @@ export default React.createClass({
 		const lastMsgObj = hallObj.news[hallNewCount-1] ? hallObj.news[hallNewCount-1] : 
 							hallObj.msg[hallObj.msg.length-1] ? hallObj.msg[hallObj.msg.length-1] : '';
 
-		const prevMsg = lastMsgObj ? 
+		let prevMsg = lastMsgObj ? 
 			lastMsgObj.type === 'msg' ? `${[myself, ...list].find(o=>o.id == lastMsgObj.id).nickname} : ${lastMsgObj.content}` :
 				 lastMsgObj.content : '';
+
+		prevMsg = prevMsg.replace(/<img[^>]+>(<\/img>)*/g, '[图片]');
 		
 		return (
 			<div className='users'>

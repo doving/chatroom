@@ -69,7 +69,7 @@ const App =  React.createClass({
 								obj.target == 'HALL' ? `大厅-${o.nickname}` : o.nickname ,
 								{
 									icon: o.head,
-									body: obj.content,
+									body: obj.content.replace(/<img[^>]+>(<\/img>)*/g, '[图片]'),
 									tag: obj.target
 								});
 
