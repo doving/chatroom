@@ -18,7 +18,11 @@ const bf = browserify({
 	entries: jsSrc,
 	cache: {},
 	packageCache: {},
-	plugin: [watchify]
+	plugin: [watchify],
+	transform: [
+		['babelify', {presets: ['es2015', 'react']}],
+		['envify', {'NODE_ENV': 'production'}]
+	]
 });
 
 bf.on('update', () => {
@@ -28,13 +32,7 @@ bf.on('update', () => {
 process.env.NODE_ENV = 'production';//设置为生产环境
 
 gulp.task('reactify', () => {
-	return bf.transform('babelify', {
-			presets: ['es2015', 'react']
-		})
-		.transform('envify', {
-		  	'NODE_ENV': 'production'
-		})
-		.bundle()
+	return bf.bundle()
 		.on('error', function(e){
 			console.log('ERROR::', e.message);
 			this.emit('end');
